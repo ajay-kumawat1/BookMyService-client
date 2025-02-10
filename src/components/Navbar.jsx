@@ -1,7 +1,7 @@
 const Navbar = () => {
   return (
     <>
-      <nav className="flex justify-between items-center p-4 shadow-md bg-white">
+      <nav className="flex justify-between items-center p-4 px-70 shadow-md bg-white">
         <div className="text-xl font-bold text-[#ef830f]">BookMyService</div>
         <ul className="flex space-x-6 text-[#6d6d6d]">
           <li>

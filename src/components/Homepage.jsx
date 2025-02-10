@@ -1,8 +1,9 @@
 const Homepage = () => {
   return (
     <div className="bg-white text-black">
+
       {/* Hero Section */}
-      <section className="flex justify-between items-center px-12 py-16 m-3]">
+      <section className="flex justify-between items-center px-70 py-16 m-3]">
         <div className="w-1/2 space-y-6">
           <h1 className="text-5xl font-bold text-black leading-tight">
             Discover and Book <br /> Expert Services for Your Business
@@ -60,7 +61,7 @@ const Homepage = () => {
         </h2>
         <div className="w-full h-64 mt-6 flex items-center justify-center">
           {/* Background Dotted Pattern */}
-          <div className="absolute left-46 w-36 h-36 bg-[url('../public/images/dottedimage.png')] bg-cover"></div>
+          <div className="absolute left-70 w-36 h-36 bg-[url('../public/images/dottedimage.png')] bg-cover"></div>
 
           {/* Main Image with Oval Mask */}
           <div className="w-2/3 h-full overflow-hidden rounded-[120px] relative">
@@ -71,14 +72,14 @@ const Homepage = () => {
           </div>
 
           {/* Floating Label */}
-          <div className="absolute right-50 bg-orange-500 text-white px-6 py-4 rounded-lg font-semibold">
+          <div className="absolute right-70 bg-orange-500 text-white px-6 py-4 rounded-lg font-semibold">
             Efficiency
           </div>
         </div>
       </section>
 
       {/* Browse Services */}
-      <section className="px-12 py-16">
+      <section className="px-70 py-16">
         <h2 className="text-3xl font-bold text-black mb-6">Browse Services</h2>
 
         <div className="grid grid-cols-3 gap-6">
@@ -112,7 +113,7 @@ const Homepage = () => {
       </section>
 
       {/* Recent Projects */}
-      <section className="px-12 py-16 ">
+      <section className="px-70 py-16 ">
         <h2 className="text-3xl font-bold text-black mb-6">Recent Projects</h2>
 
         <div className="grid grid-cols-3 gap-20">
