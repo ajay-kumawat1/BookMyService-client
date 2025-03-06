@@ -1,86 +1,65 @@
+import React, { useState } from "react";
+import BookingForm from "./BookingForm";
+import { motion } from "framer-motion";
+
 const Servicelistingpage = () => {
+  const [showForm, setShowForm] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+
   const services = [
-    {
-      name: "Glamour Salon",
-      description: "Haircuts, Styling, and Spa Services",
-      availability: "9 AM - 7 PM",
-      image: "https://via.placeholder.com/80",
-    },
-    {
-      name: "Sweet Tooth Bakery",
-      description: "Cakes, Pastries, and Custom Orders",
-      availability: "7 AM - 8 PM",
-      image: "https://via.placeholder.com/80",
-    },
-    {
-      name: "Auto Master Garage",
-      description: "Car Repairs, Maintenance, and Services",
-      availability: "8 AM - 6 PM",
-      image: "https://via.placeholder.com/80",
-    },
-    {
-      name: "Elite Fitness",
-      description: "Gym, Personal Training, and Yoga",
-      availability: "6 AM - 10 PM",
-      image: "https://via.placeholder.com/80",
-    },
-    {
-      name: "Pet Care Hub",
-      description: "Veterinary Services and Pet Grooming",
-      availability: "9 AM - 6 PM",
-      image: "https://via.placeholder.com/80",
-    },
+    { name: "Glamour Salon", description: "Haircuts, Styling, and Spa", availability: "9 AM - 7 PM", image: "https://via.placeholder.com/80" },
+    { name: "Sweet Tooth Bakery", description: "Cakes, Pastries, and Custom Orders", availability: "7 AM - 8 PM", image: "https://via.placeholder.com/80" },
+    { name: "Auto Master Garage", description: "Car Repairs, Maintenance, and Services", availability: "8 AM - 6 PM", image: "https://via.placeholder.com/80" },
+    { name: "Elite Fitness", description: "Gym, Personal Training, and Yoga", availability: "6 AM - 10 PM", image: "https://via.placeholder.com/80" },
+    { name: "Pet Care Hub", description: "Veterinary Services and Pet Grooming", availability: "9 AM - 6 PM", image: "https://via.placeholder.com/80" },
+    { name: "Pet Care Hub", description: "Veterinary Services and Pet Grooming", availability: "9 AM - 6 PM", image: "https://via.placeholder.com/80" },
+    { name: "Pet Care Hub", description: "Veterinary Services and Pet Grooming", availability: "9 AM - 6 PM", image: "https://via.placeholder.com/80" },
+    { name: "Pet Care Hub", description: "Veterinary Services and Pet Grooming", availability: "9 AM - 6 PM", image: "https://via.placeholder.com/80" },
+    { name: "Pet Care Hub", description: "Veterinary Services and Pet Grooming", availability: "9 AM - 6 PM", image: "https://via.placeholder.com/80" },
   ];
 
+  const handleBookNow = (service) => {
+    setSelectedService(service);
+    setShowForm(true);
+  };
+
   return (
-    <div className="flex min-h-screen bg-gray-100 p-6">
-      {/* Sidebar */}
-      <div className="w-1/4 bg-[#e5c8a5] p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Filters</h2>
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Service Type</label>
-          <select className="w-full p-2 border rounded-lg">
-            <option>All</option>
-          </select>
-        </div>
-        <div>
-          <label className="flex items-center space-x-2">
-            <input type="checkbox" className="h-4 w-4" />
-            <span>Open Now</span>
-          </label>
-        </div>
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+      {/* Filter Section */}
+      <div className="bg-[#e5c8a5] p-4 rounded-lg shadow-md mb-6 text-center">
+        <h2 className="text-xl font-semibold">Filters</h2>
       </div>
 
       {/* Service Listings */}
-      <div className="w-3/4 p-6 ml-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service, index) => (
-          <div
+          <motion.div
             key={index}
-            className="bg-white p-6 rounded-lg shadow-md flex items-center mb-6"
+            className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center text-center"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.2 }}
           >
             <img
               src={service.image}
               alt={service.name}
-              className="w-20 h-20 rounded-full mr-6"
+              className="w-20 h-20 rounded-full mb-4"
             />
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold">{service.name}</h3>
-              <p className="text-gray-600">{service.description}</p>
-              <p className="text-gray-500">Available: {service.availability}</p>
-            </div>
-            <button className="bg-orange-500 text-white px-4 py-2 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">{service.name}</h3>
+            <p className="text-gray-600 mb-2">{service.description}</p>
+            <p className="text-gray-500 mb-4">Available: {service.availability}</p>
+            <button
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
+              onClick={() => handleBookNow(service)}
+            >
               Book Now
             </button>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      {/* Footer */}
-      {/* <footer className="fixed bottom-0 w-full bg-[#e5c8a5] py-4 text-center rounded-t-lg shadow-md">
-        <h3 className="font-semibold">Contact Us</h3>
-        <p>Email: <a href="mailto:support@servicenow.com" className="underline">support@servicenow.com</a></p>
-        <p>Phone: +1 234 567 890</p>
-      </footer> */}
+      {/* Booking Form */}
+      {showForm && <BookingForm selectedService={selectedService} onClose={() => setShowForm(false)} />}
     </div>
   );
 };
