@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import BookingForm from "./BookingForm";
 import { motion } from "framer-motion";
 

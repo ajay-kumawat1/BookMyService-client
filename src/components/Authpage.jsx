@@ -16,7 +16,7 @@ const Authpage = () => {
   });
   const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState("");
-  const [authUser, setAuthUser] = useAuth();
+  const [setAuthUser] = useAuth();
   const BACKEND_URL = "http://localhost:5000";
 
   const handleChange = (e) => {

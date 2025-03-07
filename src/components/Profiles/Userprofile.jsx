@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 
 const UserProfile = () => {
-  const [authUser, , logout] = useAuth(); // Destructure logout function
+  const [logout] = useAuth(); // Destructure logout function
   const navigate = useNavigate();
 
   const handleLogout = () => {

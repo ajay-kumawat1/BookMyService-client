@@ -1,12 +1,10 @@
-import React from 'react';
-
 const ContactPage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Hero Section */}
       <section className="text-center py-12 bg-orange-500 text-white">
         <h1 className="text-4xl font-bold mb-4">Get In Touch</h1>
-        <p className="text-lg">We'd love to hear from you! Reach out for inquiries, collaborations, or just to say hi.</p>
+        <p className="text-lg">We&apos;d love to hear from you! Reach out for inquiries, collaborations, or just to say hi.</p>
       </section>
 
       {/* Contact Form & Info */}
