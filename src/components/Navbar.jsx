@@ -15,7 +15,7 @@ const Navbar = () => {
   const handleProfileClick = () => {
     // Redirect to the appropriate profile page based on the user's role
     if (authUser) {
-      navigate(authUser.role === "Service Provider" ? "/business-profile" : "/user-profile");
+      navigate(authUser.role === "Owner" ? "/business-profile" : "/user-profile");
     }
   };
 
