@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
-import BookedServicesTable from "../BookedservicesTable";
+import BookedServicesTable from "../BookedServicesTable";
 
 const UserProfile = () => {
   const [authUser, setAuthUser, logout] = useAuth(); // Destructure setAuthUser for updating context
