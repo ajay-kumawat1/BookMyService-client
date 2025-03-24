@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Businessregistrationform from "./components/Businessregistrationform";
 import Authpage from "./components/Authpage";
-import BookingConfirmation from "./components/Bookingconformation";
+
 import MyBookings from "./components/MyBookings";
 import "../src/animation.css";
 import Services from "./pages/services/Services";
@@ -10,6 +10,7 @@ import Contact from "./pages/contact/Contact";
 import ProtectedRoute from "./components/Protectedroute";
 import BusinessProfile from "./components/Profiles/Businessprofile";
 import UserProfile from "./components/Profiles/Userprofile";
+import BookingForm from "./components/BookingForm";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
           <Route path="/user-profile" element={<UserProfile/>} />
           <Route path="/business-profile" element={<BusinessProfile />} />
           <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/book" element={<BookingConfirmation />} />
+          <Route path="/book" element={<BookingForm />} />
           <Route path="/business-registration" element={<Businessregistrationform />} />
         </Route>
       </Routes>

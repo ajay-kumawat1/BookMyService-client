@@ -1,8 +1,52 @@
-import { useEffect, useRef } from "react";
-
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 const Homepage = () => {
   const sectionsRef = useRef([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
+  // Fetch services from the API
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/service/getAll");
+
+       console.log(response);
+       
+        // const data = await response.json();
+        setServices(response.data.data); // Assuming the services are in `data.data`
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+
+    // Handle booking
+    const handleBookService = () => {
+      if (selectedService) {
+        alert(`Booking service: ${selectedService.name}`);
+        // Add your booking logic here
+      }
+    };
+  // Close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedService(null);
+  };
+    // Open modal with service details
+    const handleDetailsClick = (service) => {
+      setSelectedService(service);
+      setIsModalOpen(true);
+    };
+  // Intersection Observer for animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -149,41 +193,85 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Recent Projects */}
       <section
         ref={(el) => (sectionsRef.current[4] = el)}
         className="px-4 md:px-12 py-16 opacity-0"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-black mb-6">
-          Recent Projects
+          Latest Services
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            "Local Catering Services",
-            "Legal Consultancy",
-            "Tourism Marketing",
-            "Financial Advisory",
-            "Business Consulting",
-          ].map((project, index) => (
-            <div
-              key={index}
-              className="bg-[#f2e2ce] p-6 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-[#e5c8a5] cursor-pointer"
-            >
-              {/* Image Placeholder with Loading Animation */}
-              <div className="w-full h-40 bg-gray-300 flex items-center justify-center mb-4 animate-pulse rounded-lg">
-                <span className="text-gray-500">Loading Image...</span>
+        {loading ? (
+          <div className="text-center py-6">Loading services...</div>
+        ) : error ? (
+          <div className="text-center py-6 text-red-500">Error: {error}</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service) => (
+              <div
+                key={service._id}
+                className="bg-[#f2e2ce] p-6 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-[#e5c8a5] cursor-pointer"
+              >
+                {/* Image Placeholder or Service Image */}
+                <div className="w-full h-40 bg-gray-300 flex items-center justify-center mb-4 rounded-lg overflow-hidden">
+                  <img
+                    src={service.image || "/Service.jpg"}
+                    alt={service.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                <h3 className="text-lg font-bold text-black">{service.name}</h3>
+                <p className="text-gray-600 mt-2">{service.description}</p>
+
+                <button
+                  onClick={() => handleDetailsClick(service)}
+                  className="mt-3 bg-[#ef830f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#e56f00] transition-all duration-300"
+                >
+                  Details
+                </button>
               </div>
-
-              <h3 className="text-lg font-bold text-black">{project}</h3>
-
-              <button className="mt-3 bg-[#ef830f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#e56f00] transition-all duration-300">
-                Details
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
+
+      {/* Modal for Service Details */}
+      {isModalOpen && selectedService && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-2xl font-bold mb-4">{selectedService.name}</h2>
+            <img
+              src={selectedService.image || "/Service.jpg"}
+              alt={selectedService.name}
+              className="w-full h-40 object-cover rounded-lg mb-4"
+            />
+            <p className="text-gray-600 mb-2">{selectedService.description}</p>
+            <p className="text-gray-500 mb-2">
+              Availability: {selectedService.availability}
+            </p>
+            <p className="text-gray-500 mb-4">
+              Price: {selectedService.price ? `$${selectedService.price}` : "N/A"}
+            </p>
+
+            {/* Book Button (for users only) */}
+            <button
+              onClick={handleBookService}
+              className="w-full bg-[#ef830f] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#e56f00] transition-all duration-300"
+            >
+              Book Now
+            </button>
+
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              className="mt-4 w-full bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition-all duration-300"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
