@@ -7,7 +7,7 @@ const ServicesTable = ({ authUser, onEdit }) => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/service/getMy", {
+        const response = await fetch("https://bookmyservice.onrender.com/api/service/getMy", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
