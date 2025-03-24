@@ -21,7 +21,7 @@ const UserProfile = () => {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/user/${authUser._id}`,
+            `https://bookmyservice.onrender.com/api/user/${authUser._id}`,
             {
               method: "GET",
               headers: {
@@ -65,7 +65,7 @@ const UserProfile = () => {
     setError("");
     try {
       const response = await fetch(
-        `http://localhost:5000/api/user/${authUser._id}`,
+        `https://bookmyservice.onrender.com/api/user/${authUser._id}`,
         {
           method: "PUT",
           headers: {
