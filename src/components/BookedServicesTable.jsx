@@ -9,7 +9,7 @@ const BookedServicesTable = ({ authUser, setAuthUser }) => {
     const fetchBookedServices = async () => {
       try {
         const bookedPromises = (authUser.bookedServiceIds || []).map((id) =>
-          fetch(`https://bookmyservice.onrender.com/api/service/get/${id}`, {
+          fetch(`http://localhost:5000/api/service/get/${id}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -32,7 +32,7 @@ const BookedServicesTable = ({ authUser, setAuthUser }) => {
 
     const fetchAllServices = async () => {
       try {
-        const response = await fetch("https://bookmyservice.onrender.com/api/service/getAll", {
+        const response = await fetch("http://localhost:5000/api/service/getAll", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -55,7 +55,7 @@ const BookedServicesTable = ({ authUser, setAuthUser }) => {
 
   const handleBookService = async (serviceId) => {
     try {
-      const response = await fetch(`https://bookmyservice.onrender.com/api/service/bookService/${serviceId}`, {
+      const response = await fetch(`http://localhost:5000/api/service/bookService/${serviceId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

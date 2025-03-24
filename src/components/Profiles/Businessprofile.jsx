@@ -40,7 +40,7 @@ const BusinessProfile = () => {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
+            `http://localhost:5000/api/business-owner/${authUser._id}`,
             {
               method: "GET",
               headers: {
@@ -106,7 +106,7 @@ const BusinessProfile = () => {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://bookmyservice.onrender.com/api/service/create", {
+      const response = await fetch("http://localhost:5000/api/service/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -145,7 +145,7 @@ const BusinessProfile = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `https://bookmyservice.onrender.com/api/service/update/${editingService._id}`,
+        `http://localhost:5000/api/service/update/${editingService._id}`,
         {
           method: "PUT",
           headers: {
@@ -192,7 +192,7 @@ const BusinessProfile = () => {
     setError("");
     try {
       const response = await fetch(
-        `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
+        `http://localhost:5000/api/business-owner/${authUser._id}`,
         {
           method: "PUT",
           headers: {
