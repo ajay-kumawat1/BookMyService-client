@@ -23,7 +23,7 @@ const Authpage = () => {
   });
   const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState("");
-  const [authUser, setAuthUser] = useAuth();
+  const [, setAuthUser] = useAuth();
   const BACKEND_URL = "https://bookmyservice.onrender.com";
 
   const handleChange = (e) => {
@@ -135,28 +135,30 @@ const Authpage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-center text-orange-500 mb-6">
+      <div className="w-full max-w-2xl bg-white p-8 rounded-xl shadow-lg">
+        <h2 className="text-3xl font-bold text-center text-orange-500 mb-6">
           {verificationSent ? "Verify OTP" : isLogin ? "Login" : "Register"}
         </h2>
         {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
           {!verificationSent && (
             <div className="mb-4">
+              <label className="block text-gray-700">Role</label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-orange-300"
               >
                 <option value="User">User</option>
                 <option value="BusinessOwner">Business Owner</option>
               </select>
             </div>
           )}
-
+  
           {verificationSent ? (
             <div className="mb-4">
+              <label className="block text-gray-700">Enter OTP</label>
               <input
                 type="text"
                 name="otp"
@@ -164,12 +166,13 @@ const Authpage = () => {
                 value={formData.otp}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-3 border rounded-lg focus:ring focus:ring-orange-300"
               />
             </div>
           ) : !isLogin ? (
-            <>
-              <div className="mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="text-gray-700">First Name</label>
                 <input
                   type="text"
                   name="firstName"
@@ -177,10 +180,11 @@ const Authpage = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded-lg"
+                  className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                 />
               </div>
-              <div className="mb-4">
+              <div className="flex flex-col">
+                <label className="text-gray-700">Last Name</label>
                 <input
                   type="text"
                   name="lastName"
@@ -188,10 +192,11 @@ const Authpage = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded-lg"
+                  className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                 />
               </div>
-              <div className="mb-4">
+              <div className="flex flex-col md:col-span-2">
+                <label className="text-gray-700">Phone Number</label>
                 <input
                   type="tel"
                   name="phoneNumber"
@@ -199,12 +204,13 @@ const Authpage = () => {
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded-lg"
+                  className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                 />
               </div>
               {formData.role === "BusinessOwner" && (
                 <>
-                  <div className="mb-4">
+                  <div className="flex flex-col md:col-span-2">
+                    <label className="text-gray-700">Business Name</label>
                     <input
                       type="text"
                       name="businessName"
@@ -212,10 +218,11 @@ const Authpage = () => {
                       value={formData.businessName}
                       onChange={handleChange}
                       required
-                      className="w-full p-2 border rounded-lg"
+                      className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                     />
                   </div>
-                  <div className="mb-4">
+                  <div className="flex flex-col">
+                    <label className="text-gray-700">Business Category</label>
                     <input
                       type="text"
                       name="businessCategory"
@@ -223,10 +230,11 @@ const Authpage = () => {
                       value={formData.businessCategory}
                       onChange={handleChange}
                       required
-                      className="w-full p-2 border rounded-lg"
+                      className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                     />
                   </div>
-                  <div className="mb-4">
+                  <div className="flex flex-col">
+                    <label className="text-gray-700">Business Address</label>
                     <input
                       type="text"
                       name="businessAddress"
@@ -234,61 +242,18 @@ const Authpage = () => {
                       value={formData.businessAddress}
                       onChange={handleChange}
                       required
-                      className="w-full p-2 border rounded-lg"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <input
-                      type="text"
-                      name="city"
-                      placeholder="City"
-                      value={formData.city}
-                      onChange={handleChange}
-                      required
-                      className="w-full p-2 border rounded-lg"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <input
-                      type="text"
-                      name="state"
-                      placeholder="State"
-                      value={formData.state}
-                      onChange={handleChange}
-                      required
-                      className="w-full p-2 border rounded-lg"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <input
-                      type="text"
-                      name="zipCode"
-                      placeholder="Zip Code"
-                      value={formData.zipCode}
-                      onChange={handleChange}
-                      required
-                      className="w-full p-2 border rounded-lg"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <input
-                      type="text"
-                      name="country"
-                      placeholder="Country"
-                      value={formData.country}
-                      onChange={handleChange}
-                      required
-                      className="w-full p-2 border rounded-lg"
+                      className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                     />
                   </div>
                 </>
               )}
-            </>
+            </div>
           ) : null}
-
+  
           {!verificationSent && (
             <>
-              <div className="mb-4">
+              <div className="flex flex-col">
+                <label className="text-gray-700">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -296,10 +261,11 @@ const Authpage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-3 border rounded-lg focus:ring focus:ring-orange-300"
                 />
               </div>
-              <div className="mb-4">
+              <div className="flex flex-col">
+                <label className="text-gray-700">Password</label>
                 <input
                   type="password"
                   name="password"
@@ -307,19 +273,19 @@ const Authpage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-3 border rounded-lg focus:ring focus:ring-orange-300"
                 />
               </div>
             </>
           )}
-
+  
           <button
             type="submit"
-            className="w-full bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600"
+            className="w-full bg-orange-500 text-white p-3 rounded-lg hover:bg-orange-600 transition"
           >
             {verificationSent ? "Verify OTP" : isLogin ? "Login" : "Register"}
           </button>
-
+  
           {!verificationSent && (
             <p
               className="mt-4 text-center text-blue-500 cursor-pointer"
@@ -329,15 +295,14 @@ const Authpage = () => {
                 setError("");
               }}
             >
-              {isLogin
-                ? "Need an account? Register"
-                : "Have an account? Login"}
+              {isLogin ? "Need an account? Register" : "Have an account? Login"}
             </p>
           )}
         </form>
       </div>
     </div>
   );
+  
 };
 
 export default Authpage;
