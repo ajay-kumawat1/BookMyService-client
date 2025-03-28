@@ -23,8 +23,8 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-        <Route path="/services" element={<Services />} />
-        <Route path="/contact" element={<Contact />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/user-profile" element={<UserProfile/>} />
           <Route path="/business-profile" element={<BusinessProfile />} />
           <Route path="/my-bookings" element={<MyBookings />} />

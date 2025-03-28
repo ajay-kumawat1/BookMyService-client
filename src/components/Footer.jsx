@@ -1,54 +1,50 @@
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, FaEnvelope } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white py-8">
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Company Info */}
-        <div>
-          <h2 className="text-2xl font-bold text-orange-500">MyCompany</h2>
-          <p className="mt-2 text-sm">
-            Empowering businesses and users with seamless services.
-          </p>
+    <footer className="bg-black text-white py-12">
+      <div className="container mx-auto px-6 md:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 lg:gap-12 text-center md:text-left">
+        {/* Company Branding */}
+        <div className="flex flex-col items-center md:items-start">
+          <h2 className="text-3xl font-bold text-orange-500">BookMyService</h2>
+          <p className="mt-4 text-sm text-gray-400">The heart of seamless services</p>
+          <div className="flex justify-center md:justify-start mt-6 space-x-4">
+            {[FaFacebook, FaInstagram, FaTwitter, FaYoutube, FaEnvelope, FaLinkedin].map((Icon, index) => (
+              <a key={index} href="#" className="text-gray-400 hover:text-orange-400 transition duration-300">
+                <Icon size={24} />
+              </a>
+            ))}
+          </div>
         </div>
 
-        {/* Quick Links */}
-        <div>
-          <h3 className="text-xl font-semibold mb-2">Quick Links</h3>
-          <ul>
-            <li className="hover:text-orange-400 cursor-pointer">Home</li>
-            <li className="hover:text-orange-400 cursor-pointer">Services</li>
-            <li className="hover:text-orange-400 cursor-pointer">About Us</li>
-            <li className="hover:text-orange-400 cursor-pointer">Contact</li>
+        {/* More Links */}
+        <div className="flex flex-col items-center md:items-start">
+          <h3 className="text-lg font-semibold mb-3 text-white">Quick Links</h3>
+          <ul className="space-y-2 text-gray-400">
+            {["Home", "Services", "About", "Contact"].map((link, index) => (
+              <li key={index} className="cursor-pointer hover:text-orange-400 transition duration-300">
+                {link}
+              </li>
+            ))}
           </ul>
         </div>
 
-        {/* Contact & Socials */}
-        <div>
-          <h3 className="text-xl font-semibold mb-2">Contact Us</h3>
-          <p>Email: support@mycompany.com</p>
-          <p>Phone: +91 9876543210</p>
-
-          <div className="flex mt-4 space-x-4">
-            <a href="#" className="hover:text-orange-400">
-              <FaFacebook size={20} />
-            </a>
-            <a href="#" className="hover:text-orange-400">
-              <FaTwitter size={20} />
-            </a>
-            <a href="#" className="hover:text-orange-400">
-              <FaInstagram size={20} />
-            </a>
-            <a href="#" className="hover:text-orange-400">
-              <FaLinkedin size={20} />
-            </a>
-          </div>
+        {/* About & Policies */}
+        <div className="flex flex-col items-center md:items-start">
+          <h3 className="text-lg font-semibold mb-3 text-white">About Us</h3>
+          <ul className="space-y-2 text-gray-400">
+            {["Partner with us", "Jobs", "Terms & Conditions", "Cookie Policy", "Privacy Policy", "Editorial Policy", "Masthead"].map((link, index) => (
+              <li key={index} className="cursor-pointer hover:text-orange-400 transition duration-300">
+                {link}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-700 mt-8 pt-4 text-center text-sm">
-        © {new Date().getFullYear()} MyCompany. All Rights Reserved.
+      <div className="border-t border-gray-700 mt-8 pt-4 text-center text-sm text-gray-400">
+        © {new Date().getFullYear()} <span className="font-semibold text-white">BookMyService</span>. Made with ❤️ in India.
       </div>
     </footer>
   );
