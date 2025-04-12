@@ -3,26 +3,46 @@ import { useState, useEffect } from "react";
 const BookedServicesTable = ({ authUser, setAuthUser }) => {
   const [bookedServices, setBookedServices] = useState([]);
   const [allServices, setAllServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchBookedServices = async () => {
       try {
-        const bookedPromises = (authUser.bookedServiceIds || []).map((id) =>
+        setError("");
+        const serviceIds = authUser?.bookedServiceIds || [];
+        console.log("Fetching booked services for IDs:", serviceIds); // Debug
+        if (!Array.isArray(serviceIds) || serviceIds.length === 0) {
+          setBookedServices([]);
+          return;
+        }
+
+        const bookedPromises = serviceIds.map((id) =>
           fetch(`https://bookmyservice.onrender.com/api/service/get/${id}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
             },
             credentials: "include",
-          }).then((res) => res.json())
+          })
+            .then((res) => {
+              if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+              return res.json();
+            })
+            .catch((err) => {
+              console.error(`Fetch error for ID ${id}:`, err);
+              return { success: "error", message: err.message };
+            })
         );
+
         const bookedResponses = await Promise.all(bookedPromises);
-        const services = bookedResponses.map((res) => {
-          if (!res.ok) throw new Error(res.message || "Failed to fetch service");
-          return res.data;
-        });
+        console.log("Raw Booked Responses:", bookedResponses); // Debug
+        const services = bookedResponses
+          .filter((res) => res.success === true && res.data) // Changed to res.success
+          .map((res) => res.data);
+
+        console.log("Filtered Booked Services:", services); // Debug
         setBookedServices(services);
       } catch (err) {
         setError("Failed to load booked services: " + err.message);
@@ -36,22 +56,26 @@ const BookedServicesTable = ({ authUser, setAuthUser }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          credentials: "include",
         });
         const data = await response.json();
+        console.log("All Services Response:", data); // Debug
         if (!response.ok) throw new Error(data.message || "Failed to fetch services");
-        setAllServices(data.data || []);
+        setAllServices(Array.isArray(data.data) ? data.data : []);
       } catch (err) {
         setError("Failed to load all services: " + err.message);
         console.error("Fetch All Services Error:", err);
       }
     };
 
-    fetchBookedServices();
-    fetchAllServices();
-  }, [authUser.bookedServiceIds]);
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([fetchBookedServices(), fetchAllServices()]);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [authUser]);
 
   const handleBookService = async (serviceId) => {
     try {
@@ -59,17 +83,21 @@ const BookedServicesTable = ({ authUser, setAuthUser }) => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
         credentials: "include",
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to book service");
 
-      // Update authUser with new bookedServiceIds
-      const updatedUser = { ...authUser, bookedServiceIds: [...(authUser.bookedServiceIds || []), serviceId] };
-      setAuthUser(updatedUser);
-      setBookedServices([...bookedServices, allServices.find((s) => s._id === serviceId)]);
+      const service = allServices.find((s) => s._id === serviceId);
+      if (!service) throw new Error("Service not found");
+
+      setAuthUser((prev) => ({
+        ...prev,
+        bookedServiceIds: [...(prev.bookedServiceIds || []), serviceId],
+      }));
+      setBookedServices((prev) => [...prev, service]);
       alert("Service booked successfully!");
     } catch (err) {
       setError("Failed to book service: " + err.message);
@@ -77,71 +105,173 @@ const BookedServicesTable = ({ authUser, setAuthUser }) => {
     }
   };
 
+  const handleCancelService = async (serviceId) => {
+    try {
+      const response = await fetch(`https://bookmyservice.onrender.com/api/service/cancelService/${serviceId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to cancel service");
+
+      setAuthUser((prev) => ({
+        ...prev,
+        bookedServiceIds: (prev.bookedServiceIds || []).filter((id) => id !== serviceId),
+      }));
+      setBookedServices((prev) => prev.filter((s) => s._id !== serviceId));
+      alert("Service cancelled successfully!");
+    } catch (err) {
+      setError("Failed to cancel service: " + err.message);
+      console.error("Cancel Service Error:", err);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center text-gray-500 text-sm sm:text-base">Loading...</div>;
+  }
+
   return (
-    <>
-      {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Booked Services</h3>
-      {bookedServices.length === 0 ? (
-        <p className="text-center text-gray-500">No services booked yet.</p>
-      ) : (
-        <table className="w-full text-left border-collapse mb-8">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-3 px-6 text-sm font-semibold text-gray-700">Name</th>
-              <th className="py-3 px-6 text-sm font-semibold text-gray-700">Category</th>
-              <th className="py-3 px-6 text-sm font-semibold text-gray-700">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookedServices.map((service) => (
-              <tr key={service._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td className="py-4 px-6 text-gray-800">{service.name}</td>
-                <td className="py-4 px-6 text-gray-800">{service.category}</td>
-                <td className="py-4 px-6 text-gray-800">{service.price || "N/A"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="space-y-6 sm:space-y-8">
+      {error && (
+        <div className="text-center text-red-500 text-sm sm:text-base">{error}</div>
       )}
 
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">Available Services</h3>
-      {allServices.length === 0 ? (
-        <p className="text-center text-gray-500">No services available.</p>
-      ) : (
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-3 px-6 text-sm font-semibold text-gray-700">Name</th>
-              <th className="py-3 px-6 text-sm font-semibold text-gray-700">Category</th>
-              <th className="py-3 px-6 text-sm font-semibold text-gray-700">Price</th>
-              <th className="py-3 px-6 text-sm font-semibold text-gray-700">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allServices.map((service) => (
-              <tr key={service._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td className="py-4 px-6 text-gray-800">{service.name}</td>
-                <td className="py-4 px-6 text-gray-800">{service.category}</td>
-                <td className="py-4 px-6 text-gray-800">{service.price || "N/A"}</td>
-                <td className="py-4 px-6 text-gray-800">
-                  <button
-                    onClick={() => handleBookService(service._id)}
-                    disabled={bookedServices.some((s) => s._id === service._id)}
-                    className={`px-4 py-2 rounded-lg text-white ${
-                      bookedServices.some((s) => s._id === service._id)
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-orange-500 hover:bg-orange-600"
-                    }`}
+      {/* Booked Services */}
+      <div>
+        <h3 className="text-base sm:text-lg md:text-xl font-semibold text-orange-500 mb-3 sm:mb-4">
+          Your Booked Services
+        </h3>
+        {bookedServices.length === 0 ? (
+          <p className="text-center text-gray-500 text-sm sm:text-base">
+            No services booked yet.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs sm:text-sm md:text-base">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Name
+                  </th>
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Category
+                  </th>
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Price
+                  </th>
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Status
+                  </th>
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookedServices.map((service) => (
+                  <tr
+                    key={service._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
                   >
-                    {bookedServices.some((s) => s._id === service._id) ? "Booked" : "Book Now"}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      {service.name || "N/A"}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      {service.category || "N/A"}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      {service.price ? `$${service.price}` : "N/A"}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      {service.status || "Booked"}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      <button
+                        onClick={() => handleCancelService(service._id)}
+                        className="text-red-500 hover:text-red-700 text-xs sm:text-sm"
+                        disabled={service.status === "completed"}
+                      >
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Available Services */}
+      <div>
+        <h3 className="text-base sm:text-lg md:text-xl font-semibold text-orange-500 mb-3 sm:mb-4">
+          Available Services
+        </h3>
+        {allServices.length === 0 ? (
+          <p className="text-center text-gray-500 text-sm sm:text-base">
+            No services available.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs sm:text-sm md:text-base">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Name
+                  </th>
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Category
+                  </th>
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Price
+                  </th>
+                  <th className="py-2 sm:py-3 px-2 sm:px-4 md:px-6 font-semibold text-gray-700">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {allServices.map((service) => (
+                  <tr
+                    key={service._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      {service.name || "N/A"}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      {service.category || "N/A"}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      {service.price ? `$${service.price}` : "N/A"}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 md:px-6">
+                      <button
+                        onClick={() => handleBookService(service._id)}
+                        disabled={bookedServices.some((s) => s._id === service._id)}
+                        className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-white text-xs sm:text-sm ${
+                          bookedServices.some((s) => s._id === service._id)
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-orange-500 hover:bg-orange-600"
+                        }`}
+                      >
+                        {bookedServices.some((s) => s._id === service._id)
+                          ? "Booked"
+                          : "Book Now"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

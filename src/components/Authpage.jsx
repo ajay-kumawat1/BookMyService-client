@@ -24,7 +24,9 @@ const Authpage = () => {
   const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState("");
   const [, setAuthUser] = useAuth();
+  // const BACKEND_URL = "https://bookmyservice.onrender.com";
   const BACKEND_URL = "https://bookmyservice.onrender.com";
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

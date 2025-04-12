@@ -12,7 +12,7 @@ const Homepage = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/service/getAll");
+        const response = await axios.get("https://bookmyservice.onrender.com/api/service/getAll");
 
        console.log(response);
        
