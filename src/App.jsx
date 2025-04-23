@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/Protectedroute";
 import BusinessProfile from "./components/Profiles/Businessprofile";
 import UserProfile from "./components/Profiles/Userprofile";
 import BookingForm from "./components/BookingForm";
+import AdminDashboard from "./components/dashboard";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/book" element={<BookingForm />} />
           <Route path="/business-registration" element={<Businessregistrationform />} />
+          <Route path="/dashboard" element={< AdminDashboard/>} />
         </Route>
       </Routes>
     </Router>

@@ -24,7 +24,7 @@ const Authpage = () => {
   const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState("");
   const [, setAuthUser] = useAuth();
-  // const BACKEND_URL = "https://bookmyservice.onrender.com";
+  // const BACKEND_URL = "http://localhost:5000";
   const BACKEND_URL = "https://bookmyservice.onrender.com";
 
 
