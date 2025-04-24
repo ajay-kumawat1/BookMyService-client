@@ -2,7 +2,115 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
-import BookedServicesTable from "../BookedServicesTable";
+import { Menu, X, User } from "lucide-react"; // Import User icon
+// import BookedServicesTable from "../BookedServicesTable";
+
+
+const BookedServicesTable = ({ authUser }) => {
+  console.log(authUser, "authUser"); // Debug log
+  const [bookedServices, setBookedServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchBookedServices = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (!authUser?.bookedServiceIds || authUser.bookedServiceIds.length === 0) {
+          setBookedServices([]);
+          setLoading(false);
+          return;
+        }
+
+        // Deduplicate service IDs to avoid fetching the same service multiple times
+        const uniqueServiceIds = [...new Set(authUser.bookedServiceIds)];
+
+        // Fetch each service individually
+        const servicePromises = uniqueServiceIds.map(async (serviceId) => {
+          const response = await fetch(`https://bookmyservice.onrender.com/api/service/get/${serviceId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch service ${serviceId}: ${response.status}`);
+          }
+
+          const data = await response.json();
+          if (!data.success) {
+            throw new Error(data.error || `Failed to fetch service ${serviceId}`);
+          }
+
+          // Add booking count for display (how many times this service was booked)
+          const bookingCount = authUser.bookedServiceIds.filter(
+            (id) => id === serviceId
+          ).length;
+
+          return { ...data.data, bookingCount };
+        });
+
+        const services = await Promise.all(servicePromises);
+        setBookedServices(services);
+      } catch (err) {
+        setError(err.message || "Failed to load booked services.");
+        console.error("Fetch Booked Services Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookedServices();
+  }, [authUser]);
+
+  if (loading) {
+    return <div className="text-center text-gray-600">Loading booked services...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  return (
+    <table className="w-full text-left border-collapse text-sm sm:text-base">
+      <thead>
+        <tr className="bg-gray-100">
+          <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700">Service Name</th>
+          <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700">Price</th>
+          <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700">Availability</th>
+          <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700">Times Booked</th>
+        </tr>
+      </thead>
+      <tbody>
+        {bookedServices.length > 0 ? (
+          bookedServices.map((service, index) => (
+            <tr
+              key={service._id}
+              className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">{service.name}</td>
+              <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">
+                {service.price ? `$${service.price}` : "N/A"}
+              </td>
+              <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">{service.availability}</td>
+              <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">{service.bookingCount}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="4" className="py-4 text-center text-gray-600">
+              No bookings found.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+};
 
 
 const UserProfile = () => {
@@ -120,133 +228,116 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
-      {/* Hamburger Menu Button */}
-      <button
-        className="md:hidden p-4 bg-orange-500 text-white fixed top-0 left-0 z-50"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
+      {/* Mobile Menu Button - Similar to Navbar */}
+      <div className="md:hidden flex justify-between items-center p-4 bg-white shadow-md">
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="text-orange-500 focus:outline-none"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          ></path>
-        </svg>
-      </button>
-
-      {/* Sidebar */}
-      <div
-        className={`fixed md:static top-0 left-0 h-full bg-white shadow-lg p-4 sm:p-6 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 transition-transform duration-300 z-40 w-64 md:w-1/4 lg:w-1/4 xl:w-3/12 overflow-y-auto`}
-      >
-        <div className="flex justify-between items-center mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-orange-500">
-            User Dashboard
-          </h2>
-          <button
-            className="md:hidden text-gray-500"
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
-        </div>
-        <nav className="space-y-2 sm:space-y-4">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveSection(item.id);
-                setIsSidebarOpen(false);
-              }}
-              className={`w-full p-2 sm:p-3 text-white text-left rounded-lg text-sm sm:text-base ${
-                item.color
-              } ${
-                activeSection === item.id
-                  ? "ring-2 ring-offset-2 ring-orange-500"
-                  : ""
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-          <button
-            onClick={handleLogout}
-            className="w-full p-2 sm:p-3 bg-red-500 text-white text-left rounded-lg hover:bg-red-600 text-sm sm:text-base"
-          >
-            Logout
-          </button>
-        </nav>
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+        <h1 className="text-xl font-bold text-orange-500">User Dashboard</h1>
+        <div className="w-6"></div> {/* Spacer for alignment */}
       </div>
 
-      {/* Main Content */}
+      {/* Sidebar - Similar to Navbar's mobile menu */}
       <div
-        className={`w-full md:w-3/4 lg:w-3/4 xl:w-9/12 p-4 sm:p-6 mt-14 md:mt-0 overflow-y-auto h-screen transition-all duration-300 ${
-          isSidebarOpen ? "opacity-50 md:opacity-100" : ""
-        }`}
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:relative md:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-orange-500 mb-4 sm:mb-6">
-          User Profile
+        <div className="flex flex-col h-full p-4">
+          <div className="flex items-center justify-between mb-6 p-2">
+            <h2 className="text-xl font-bold text-orange-500">User Dashboard</h2>
+            <button
+              className="md:hidden text-gray-500"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <X size={24} />
+            </button>
+          </div>
+          
+          <nav className="flex-1 space-y-2">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveSection(item.id);
+                  setIsSidebarOpen(false);
+                }}
+                className={`w-full p-3 text-white text-left rounded-lg transition-colors ${
+                  item.color
+                } ${
+                  activeSection === item.id ? "ring-2 ring-offset-2 ring-orange-500" : ""
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+            <button
+              onClick={handleLogout}
+              className="w-full p-3 bg-red-500 text-white text-left rounded-lg hover:bg-red-600 transition-colors"
+            >
+              Logout
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+        <h1 className="text-2xl md:text-3xl font-bold text-orange-500 mb-6">
+          {activeSection === "my-profile" && "My Profile"}
+          {activeSection === "my-bookings" && "My Bookings"}
+          {activeSection === "edit-profile" && "Edit Profile"}
         </h1>
 
         {activeSection === "my-profile" && (
-          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-orange-500 mb-4 sm:mb-6 text-center">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl md:text-2xl font-bold text-orange-500 mb-6 text-center">
               My Profile
             </h2>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm sm:text-base">
+              <table className="w-full text-left border-collapse">
                 <tbody>
-                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
+                  <tr className="border-b border-gray-200 hover:bg-gray-50">
+                    <th className="py-4 px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
                       First Name
                     </th>
-                    <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">
+                    <td className="py-4 px-6 text-gray-800">
                       {authUser.firstName}
                     </td>
                   </tr>
-                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
+                  <tr className="border-b border-gray-200 hover:bg-gray-50">
+                    <th className="py-4 px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
                       Last Name
                     </th>
-                    <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">
+                    <td className="py-4 px-6 text-gray-800">
                       {authUser.lastName}
                     </td>
                   </tr>
-                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
+                  <tr className="border-b border-gray-200 hover:bg-gray-50">
+                    <th className="py-4 px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
                       Email
                     </th>
-                    <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">
+                    <td className="py-4 px-6 text-gray-800">
                       {authUser.email}
                     </td>
                   </tr>
-                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    <th className="py-2 sm:py-4 px-3 sm:px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
+                  <tr className="border-b border-gray-200 hover:bg-gray-50">
+                    <th className="py-4 px-6 font-semibold text-gray-700 bg-gray-100 w-1/3">
                       Phone Number
                     </th>
-                    <td className="py-2 sm:py-4 px-3 sm:px-6 text-gray-800">
-                      {authUser.phoneNumber}
+                    <td className="py-4 px-6 text-gray-800">
+                      {authUser.phoneNumber || "Not provided"}
                     </td>
                   </tr>
                 </tbody>
@@ -256,32 +347,27 @@ const UserProfile = () => {
         )}
 
         {activeSection === "my-bookings" && (
-          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-orange-500 mb-4 sm:mb-6 text-center">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl md:text-2xl font-bold text-orange-500 mb-6 text-center">
               Booked Services
             </h2>
             <div className="overflow-x-auto">
-              <BookedServicesTable
-                authUser={authUser}
-                setAuthUser={setAuthUser}
-              />
+              <BookedServicesTable authUser={authUser} />
             </div>
           </div>
         )}
 
         {activeSection === "edit-profile" && (
-          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-lg mx-auto">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-orange-500 mb-4 sm:mb-6 text-center">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+            <h2 className="text-xl md:text-2xl font-bold text-orange-500 mb-6 text-center">
               Edit Profile
             </h2>
             {error && (
-              <div className="mb-4 text-red-500 text-center text-sm sm:text-base">
-                {error}
-              </div>
+              <div className="mb-4 text-red-500 text-center">{error}</div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block font-medium text-sm sm:text-base text-gray-700">
+                <label className="block font-medium text-gray-700">
                   First Name
                 </label>
                 <input
@@ -290,11 +376,11 @@ const UserProfile = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
               <div>
-                <label className="block font-medium text-sm sm:text-base text-gray-700">
+                <label className="block font-medium text-gray-700">
                   Last Name
                 </label>
                 <input
@@ -303,11 +389,11 @@ const UserProfile = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
               <div>
-                <label className="block font-medium text-sm sm:text-base text-gray-700">
+                <label className="block font-medium text-gray-700">
                   Email
                 </label>
                 <input
@@ -316,11 +402,11 @@ const UserProfile = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
               <div>
-                <label className="block font-medium text-sm sm:text-base text-gray-700">
+                <label className="block font-medium text-gray-700">
                   Phone Number
                 </label>
                 <input
@@ -329,12 +415,12 @@ const UserProfile = () => {
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full p-2 sm:p-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm sm:text-base"
+                className="w-full p-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
               >
                 Update Profile
               </button>

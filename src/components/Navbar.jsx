@@ -107,6 +107,15 @@ const Navbar = () => {
             </li>
             <li>
               <Link
+                to="/portfolio"
+                className="hover:text-[#ef830f]"
+                onClick={() => setIsOpen(false)}
+              >
+                PortFolio
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/contact"
                 className="hover:text-[#ef830f]"
                 onClick={() => setIsOpen(false)}

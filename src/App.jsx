@@ -12,6 +12,9 @@ import BusinessProfile from "./components/Profiles/Businessprofile";
 import UserProfile from "./components/Profiles/Userprofile";
 import BookingForm from "./components/BookingForm";
 import AdminDashboard from "./components/dashboard";
+import Portfolio from "./pages/Portfolio/Portfolio";
+import PrivacyPolicyPage from "./components/PrivacyPolicyPage";
+import TermsAndConditionsPage from "./components/TermsAndConditionsPage";
 
 function App() {
   return (
@@ -20,7 +23,11 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Authpage />} />
-      
+        <Route path="/dashboard" element={< AdminDashboard/>} />
+        <Route path="/portfolio" element={<Portfolio/>} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage/>} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditionsPage/>} />
+
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
@@ -31,7 +38,6 @@ function App() {
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/book" element={<BookingForm />} />
           <Route path="/business-registration" element={<Businessregistrationform />} />
-          <Route path="/dashboard" element={< AdminDashboard/>} />
         </Route>
       </Routes>
     </Router>
