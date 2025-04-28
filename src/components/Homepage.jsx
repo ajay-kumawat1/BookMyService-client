@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import BookingForm from "./BookingForm";
+import { useAuth } from "../context/AuthProvider";
+
 const Homepage = () => {
   const sectionsRef = useRef([]);
   const [services, setServices] = useState([]);
@@ -7,16 +11,15 @@ const Homepage = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const navigate = useNavigate();
+  const [authUser] = useAuth();
 
   // Fetch services from the API
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const response = await axios.get("https://bookmyservice.onrender.com/api/service/getAll");
-
-       console.log(response);
-       
-        // const data = await response.json();
         setServices(response.data.data); // Assuming the services are in `data.data`
       } catch (error) {
         setError(error.message);
@@ -28,24 +31,43 @@ const Homepage = () => {
     fetchServices();
   }, []);
 
+  // Handle booking
+  const handleBookService = () => {
+    if (!authUser) {
+      // Redirect to login if not logged in
+      alert("Please login to book a service");
+      navigate("/login");
+      return;
+    }
 
-    // Handle booking
-    const handleBookService = () => {
-      if (selectedService) {
-        alert(`Booking service: ${selectedService.name}`);
-        // Add your booking logic here
-      }
-    };
+    if (selectedService) {
+      setShowBookingForm(true);
+      setIsModalOpen(false);
+    }
+  };
+
+  // handle get started
+  const handleGetStartred = () => {
+    navigate("/services")
+  }
+
   // Close modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedService(null);
   };
-    // Open modal with service details
-    const handleDetailsClick = (service) => {
-      setSelectedService(service);
-      setIsModalOpen(true);
-    };
+
+  // Close booking form
+  const handleCloseBookingForm = () => {
+    setShowBookingForm(false);
+    setSelectedService(null);
+  };
+
+  // Open modal with service details
+  const handleDetailsClick = (service) => {
+    setSelectedService(service);
+    setIsModalOpen(true);
+  };
   // Intersection Observer for animations
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -91,7 +113,7 @@ const Homepage = () => {
             Our platform streamlines booking and management for seamless
             transactions.
           </p>
-          <button className="px-6 py-3 bg-[#ef830f] text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <button onClick={handleGetStartred} className="px-6 py-3 bg-[#ef830f] text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105">
             Get Started
           </button>
         </div>
@@ -210,23 +232,31 @@ const Homepage = () => {
             {services.map((service) => (
               <div
                 key={service._id}
-                className="bg-[#f2e2ce] p-6 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-[#e5c8a5] cursor-pointer"
+                className="bg-[#f2e2ce] p-6 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-[#e5c8a5] cursor-pointer flex flex-col h-[400px]"
               >
                 {/* Image Placeholder or Service Image */}
-                <div className="w-full h-40 bg-gray-300 flex items-center justify-center mb-4 rounded-lg overflow-hidden">
+                <div className="w-full h-56 bg-gray-300 flex items-center justify-center mb-4 overflow-hidden">
                   <img
-                    src={service.image || "/Service.jpg"}
+                    src={service.images && service.images.length > 0 ? service.images[0] : "/Service.jpg"}
                     alt={service.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/images/Service.jpg";
+                    }}
                   />
                 </div>
 
                 <h3 className="text-lg font-bold text-black">{service.name}</h3>
-                <p className="text-gray-600 mt-2">{service.description}</p>
+                {/* <p className="text-gray-600 mt-2 line-clamp-2">{service.description}</p> */}
+                <div className="flex justify-between w-full text-sm text-gray-500 mt-2">
+                  <span>Available: {service.availability || 'Yes'}</span>
+                  {service.price && <span>${service.price}</span>}
+                </div>
 
                 <button
                   onClick={() => handleDetailsClick(service)}
-                  className="mt-3 bg-[#ef830f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#e56f00] transition-all duration-300"
+                  className="mt-auto bg-[#ef830f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#e56f00] transition-all duration-300"
                 >
                   Details
                 </button>
@@ -241,14 +271,20 @@ const Homepage = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-2xl font-bold mb-4">{selectedService.name}</h2>
-            <img
-              src={selectedService.image || "/Service.jpg"}
-              alt={selectedService.name}
-              className="w-full h-40 object-cover rounded-lg mb-4"
-            />
+            <div className="w-full h-56 overflow-hidden mb-4">
+              <img
+                src={selectedService.images && selectedService.images.length > 0 ? selectedService.images[0] : "/images/Service.jpg"}
+                alt={selectedService.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/Service.jpg";
+                }}
+              />
+            </div>
             <p className="text-gray-600 mb-2">{selectedService.description}</p>
             <p className="text-gray-500 mb-2">
-              Availability: {selectedService.availability}
+              Availability: {selectedService.availability || 'Yes'}
             </p>
             <p className="text-gray-500 mb-4">
               Price: {selectedService.price ? `$${selectedService.price}` : "N/A"}
@@ -271,6 +307,14 @@ const Homepage = () => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Booking Form */}
+      {showBookingForm && selectedService && (
+        <BookingForm
+          selectedService={selectedService}
+          onClose={handleCloseBookingForm}
+        />
       )}
     </div>
   );

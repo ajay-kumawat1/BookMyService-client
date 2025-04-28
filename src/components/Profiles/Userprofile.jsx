@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 import { Menu, X, User } from "lucide-react"; // Import User icon
+import { IoArrowBackCircle } from "react-icons/io5";
+import MyBookings from "../MyBookings";
 // import BookedServicesTable from "../BookedServicesTable";
 
 
@@ -132,7 +134,7 @@ const UserProfile = () => {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `https://bookmyservice.onrender.com/api/user/${authUser._id}`,
+            `https://bookmyservice.onrender.com/api/auth/me`,
             {
               method: "GET",
               headers: {
@@ -183,7 +185,7 @@ const UserProfile = () => {
     setError("");
     try {
       const response = await fetch(
-        `https://bookmyservice.onrender.com/api/user/${authUser._id}`,
+        `https://bookmyservice.onrender.com/api/user/update-profile/${authUser._id}`,
         {
           method: "PUT",
           headers: {
@@ -207,7 +209,9 @@ const UserProfile = () => {
       console.error("Update Profile Error:", err);
     }
   };
-
+  const handleback = () => {
+    navigate("/")
+  }
   const menuItems = [
     {
       id: "my-profile",
@@ -228,17 +232,19 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
-      {/* Mobile Menu Button - Similar to Navbar */}
-      <div className="md:hidden flex justify-between items-center p-4 bg-white shadow-md">
-        <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="text-orange-500 focus:outline-none"
-        >
-          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-        <h1 className="text-xl font-bold text-orange-500">User Dashboard</h1>
-        <div className="w-6"></div> {/* Spacer for alignment */}
-      </div>
+  {/* Mobile Menu Button - For smaller screens */}
+  <div className="md:hidden flex justify-between items-center p-4 bg-white shadow-md">
+    <button
+      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      className="text-orange-500 focus:outline-none"
+    >
+      {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+    </button>
+    <div className="flex items-center space-x-2">
+      <h1 className="text-xl text font-bold text-orange-500">User Profile</h1>
+    </div>
+      <IoArrowBackCircle className="text-orange-500" size={24} onClick={handleback} /> {/* Better suited icon */}
+  </div>
 
       {/* Sidebar - Similar to Navbar's mobile menu */}
       <div
@@ -248,7 +254,8 @@ const UserProfile = () => {
       >
         <div className="flex flex-col h-full p-4">
           <div className="flex items-center justify-between mb-6 p-2">
-            <h2 className="text-xl font-bold text-orange-500">User Dashboard</h2>
+      <IoArrowBackCircle className="text-orange-500" size={24} onClick={handleback} /> {/* Better suited icon */}
+      <h2 className="text-xl font-bold text-orange-500">User Dashboard </h2>
             <button
               className="md:hidden text-gray-500"
               onClick={() => setIsSidebarOpen(false)}
@@ -256,7 +263,7 @@ const UserProfile = () => {
               <X size={24} />
             </button>
           </div>
-          
+
           <nav className="flex-1 space-y-2">
             {menuItems.map((item) => (
               <button
@@ -352,7 +359,7 @@ const UserProfile = () => {
               Booked Services
             </h2>
             <div className="overflow-x-auto">
-              <BookedServicesTable authUser={authUser} />
+              <MyBookings />
             </div>
           </div>
         )}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
+import { showSuccessToast, showErrorToast } from "../utils/toast";
 
 const Authpage = () => {
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ const Authpage = () => {
   // const BACKEND_URL = "https://bookmyservice.onrender.com";
   const BACKEND_URL = "https://bookmyservice.onrender.com";
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
@@ -40,7 +40,7 @@ const Authpage = () => {
     try {
       if (verificationSent) {
         const endpoint =
-          formData.role === "BusinessOwner"
+          formData.role === "Owner"
             ? "/api/auth/verifyAndCreateBusinessOwner"
             : "/api/auth/verifyAndCreateUser";
         console.log("Sending OTP for verification:", formData.otp);
@@ -54,18 +54,27 @@ const Authpage = () => {
         const data = await response.json();
         console.log("OTP Verification Response:", data);
 
-        if (!response.ok) throw new Error(data.message || "OTP verification failed");
+        if (!response.ok)
+          throw new Error(data.message || "OTP verification failed");
 
         const token = data.data?.token || data.token;
         if (!token) throw new Error("No token received from server");
 
-        const userData = data.data?.businessOwner || data.data?.user || data.user;
+        const userData =
+          data.data?.businessOwner || data.data?.user || data.user;
         setAuthUser(userData);
         localStorage.setItem("token", token);
-        navigate(userData.role === "BusinessOwner" ? "/business-dashboard" : "/");
+
+        showSuccessToast("Account verified successfully!");
+
+        navigate(
+          userData.role === "Owner" ? "/business-profile" : "/"
+        );
       } else if (isLogin) {
         const endpoint =
-          formData.role === "BusinessOwner" ? "/api/auth/businessOwnerLogin" : "/api/auth/login";
+          formData.role === "Owner"
+            ? "/api/auth/businessOwnerLogin"
+            : "/api/auth/login";
         const payload = { email: formData.email, password: formData.password };
         console.log("Login Payload:", payload);
 
@@ -84,15 +93,23 @@ const Authpage = () => {
         const token = data.data?.token || data.token;
         if (!token) throw new Error("No token received from server");
 
-        const userData = data.data?.businessOwner || data.data?.user || data.user;
+        const userData =
+          data.data?.businessOwner || data.data?.user || data.user;
         setAuthUser(userData);
         localStorage.setItem("token", token);
-        navigate(userData.role === "BusinessOwner" ? "/business-dashboard" : "/");
+
+        showSuccessToast(`Welcome back, ${userData.firstName || userData.ownerFirstName || 'User'}!`);
+
+        navigate(
+          userData.role === "Owner" ? "/business-profile" : "/"
+        );
       } else {
         const endpoint =
-          formData.role === "BusinessOwner" ? "/api/auth/registerBusinessOwner" : "/api/auth/register";
+          formData.role === "Owner"
+            ? "/api/auth/registerBusinessOwner"
+            : "/api/auth/register";
         const payload =
-          formData.role === "BusinessOwner"
+          formData.role === "Owner"
             ? {
                 email: formData.email,
                 password: formData.password,
@@ -125,12 +142,15 @@ const Authpage = () => {
         const data = await response.json();
         console.log("Registration Response:", data);
 
-        if (!response.ok) throw new Error(data.message || "Registration failed");
+        if (!response.ok)
+          throw new Error(data.message || "Registration failed");
 
+        showSuccessToast("Registration successful! Please verify your email with the OTP sent to your email address.");
         setVerificationSent(true);
       }
     } catch (err) {
       setError(err.message);
+      showErrorToast(err.message || "An error occurred");
       console.error("Auth Error:", err);
     }
   };
@@ -153,11 +173,11 @@ const Authpage = () => {
                 className="w-full p-3 border rounded-lg focus:ring focus:ring-orange-300"
               >
                 <option value="User">User</option>
-                <option value="BusinessOwner">Business Owner</option>
+                <option value="Owner">Business Owner</option>
               </select>
             </div>
           )}
-  
+
           {verificationSent ? (
             <div className="mb-4">
               <label className="block text-gray-700">Enter OTP</label>
@@ -209,7 +229,7 @@ const Authpage = () => {
                   className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                 />
               </div>
-              {formData.role === "BusinessOwner" && (
+              {formData.role === "Owner" && (
                 <>
                   <div className="flex flex-col md:col-span-2">
                     <label className="text-gray-700">Business Name</label>
@@ -247,11 +267,61 @@ const Authpage = () => {
                       className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
                     />
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col">
+                      <label className="text-gray-700">City</label>
+                      <input
+                        type="text"
+                        name="city"
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={handleChange}
+                        required
+                        className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-gray-700">State</label>
+                      <input
+                        type="text"
+                        name="state"
+                        placeholder="State"
+                        value={formData.state}
+                        onChange={handleChange}
+                        required
+                        className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-gray-700">Zip Code</label>
+                      <input
+                        type="text"
+                        name="zipCode"
+                        placeholder="Zip Code"
+                        value={formData.zipCode}
+                        onChange={handleChange}
+                        required
+                        className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-gray-700">Country</label>
+                      <input
+                        type="text"
+                        name="country"
+                        placeholder="Country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        required
+                        className="p-3 border rounded-lg focus:ring focus:ring-orange-300"
+                      />
+                    </div>
+                  </div>
                 </>
               )}
             </div>
           ) : null}
-  
+
           {!verificationSent && (
             <>
               <div className="flex flex-col">
@@ -280,14 +350,14 @@ const Authpage = () => {
               </div>
             </>
           )}
-  
+
           <button
             type="submit"
             className="w-full bg-orange-500 text-white p-3 rounded-lg hover:bg-orange-600 transition"
           >
             {verificationSent ? "Verify OTP" : isLogin ? "Login" : "Register"}
           </button>
-  
+
           {!verificationSent && (
             <p
               className="mt-4 text-center text-blue-500 cursor-pointer"
@@ -304,7 +374,6 @@ const Authpage = () => {
       </div>
     </div>
   );
-  
 };
 
 export default Authpage;

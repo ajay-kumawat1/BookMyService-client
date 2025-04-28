@@ -66,16 +66,28 @@ export default function AuthProvider ({ children })  {
             },
             credentials: "include",
           });
+
+          if (!response.ok) {
+            // If the token is invalid or expired, clear it
+            if (response.status === 401) {
+              console.log("Token expired or invalid, clearing token");
+              localStorage.removeItem("token");
+            }
+            setAuthUser(null);
+            setLoading(false);
+            return;
+          }
+
           const data = await response.json();
-          if (response.ok) {
+          if (data.success && data.data) {
             setAuthUser(data.data); // Restore user data
           } else {
-            // localStorage.removeItem("token"); // Clear invalid token
+            console.log("Invalid response format from server");
             setAuthUser(null);
           }
         } catch (err) {
           console.error("Restore Auth Error:", err);
-          // localStorage.removeItem("token");
+          // Don't remove token on network errors, as it might be a temporary issue
           setAuthUser(null);
         }
       }
