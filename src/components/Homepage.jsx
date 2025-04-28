@@ -165,7 +165,7 @@ const Homepage = () => {
           {/* Main Image with Oval Mask */}
           <div className="w-4/5 md:w-2/3 h-full overflow-hidden rounded-[60px] md:rounded-[120px] relative">
             <img
-              src="../public/images/largeimage.png"
+              src="/public/images/largeimage.png"
               className="w-full h-full object-cover"
               alt="Service"
             />
