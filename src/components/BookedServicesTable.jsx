@@ -18,7 +18,7 @@ import { useState, useEffect } from "react";
 //         }
 
 //         const bookedPromises = serviceIds.map((id) =>
-//           fetch(`https://bookmyservice.onrender.com/api/service/get/${id}`, {
+//           fetch(`http://localhost:5000/api/service/get/${id}`, {
 //             method: "GET",
 //             headers: {
 //               "Content-Type": "application/json",
@@ -52,7 +52,7 @@ import { useState, useEffect } from "react";
 
 //     const fetchAllServices = async () => {
 //       try {
-//         const response = await fetch("https://bookmyservice.onrender.com/api/service/getAll", {
+//         const response = await fetch("http://localhost:5000/api/service/getAll", {
 //           method: "GET",
 //           headers: {
 //             "Content-Type": "application/json",
@@ -79,7 +79,7 @@ import { useState, useEffect } from "react";
 
 //   const handleBookService = async (serviceId) => {
 //     try {
-//       const response = await fetch(`https://bookmyservice.onrender.com/api/service/bookService/${serviceId}`, {
+//       const response = await fetch(`http://localhost:5000/api/service/bookService/${serviceId}`, {
 //         method: "PUT",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -107,7 +107,7 @@ import { useState, useEffect } from "react";
 
 //   const handleCancelService = async (serviceId) => {
 //     try {
-//       const response = await fetch(`https://bookmyservice.onrender.com/api/service/cancelService/${serviceId}`, {
+//       const response = await fetch(`http://localhost:5000/api/service/cancelService/${serviceId}`, {
 //         method: "PUT",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -298,7 +298,7 @@ const BookedServicesTable = ({ authUser }) => {
         const uniqueServiceIds = [...new Set(authUser.bookedServiceIds)];
 
         const bookingPromises = uniqueServiceIds.map(async (serviceId) => {
-          const response = await fetch(`https://bookmyservice.onrender.com/api/bookings/service/${serviceId}`, {
+          const response = await fetch(`http://localhost:5000/api/bookings/service/${serviceId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },

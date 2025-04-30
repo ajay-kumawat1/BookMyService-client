@@ -25,8 +25,8 @@ const Authpage = () => {
   const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState("");
   const [, setAuthUser] = useAuth();
-  // const BACKEND_URL = "https://bookmyservice.onrender.com";
-  const BACKEND_URL = "https://bookmyservice.onrender.com";
+  // const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = "http://localhost:5000";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -67,9 +67,14 @@ const Authpage = () => {
 
         showSuccessToast("Account verified successfully!");
 
-        navigate(
-          userData.role === "Owner" ? "/business-profile" : "/"
-        );
+        // Check if the user is a business owner or SuperAdmin
+        if (userData.role === "Owner" || userData.role === "SuperAdmin") {
+          console.log("Navigating to business profile for role:", userData.role);
+          navigate("/business-profile");
+        } else {
+          console.log("Navigating to home for role:", userData.role);
+          navigate("/");
+        }
       } else if (isLogin) {
         const endpoint =
           formData.role === "Owner"
@@ -100,9 +105,14 @@ const Authpage = () => {
 
         showSuccessToast(`Welcome back, ${userData.firstName || userData.ownerFirstName || 'User'}!`);
 
-        navigate(
-          userData.role === "Owner" ? "/business-profile" : "/"
-        );
+        // Check if the user is a business owner or SuperAdmin
+        if (userData.role === "Owner" || userData.role === "SuperAdmin") {
+          console.log("Navigating to business profile for role:", userData.role);
+          navigate("/business-profile");
+        } else {
+          console.log("Navigating to home for role:", userData.role);
+          navigate("/");
+        }
       } else {
         const endpoint =
           formData.role === "Owner"

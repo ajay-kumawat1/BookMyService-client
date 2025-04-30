@@ -222,7 +222,7 @@
 //     setError(null);
 
 //     try {
-//       const response = await axios.post(`https://bookmyservice.onrender.com/api/bookings/confirm`, {
+//       const response = await axios.post(`http://localhost:5000/api/bookings/confirm`, {
 //         serviceId: selectedService._id,
 //         userName: formData.name,
 //         email: formData.email,
@@ -695,7 +695,7 @@
 
 //     try {
 //       // 1. Create Payment Intent on your backend
-//       const { data: { clientSecret } } = await axios.post("https://bookmyservice.onrender.com/api/stripe/payment-intent", {
+//       const { data: { clientSecret } } = await axios.post("http://localhost:5000/api/stripe/payment-intent", {
 //         amount: amount * 100, // Convert to cents
 //         currency: 'usd',
 //         metadata: {
@@ -797,7 +797,7 @@
 // //   try {
 // //     // 1. First create the booking record
 // //     const bookingResponse = await axios.post(
-// //       'https://bookmyservice.onrender.com/api/booking/create',
+// //       'http://localhost:5000/api/booking/create',
 // //       {
 // //         serviceId: selectedService._id,
 // //         date: formData.date,
@@ -845,7 +845,7 @@
 
 //     // 2. Create the booking record
 //     const bookingResponse = await axios.post(
-//       'https://bookmyservice.onrender.com/api/booking/create',
+//       'http://localhost:5000/api/booking/create',
 //       {
 //         serviceId: selectedService._id,
 //         date: formData.date,
@@ -903,7 +903,7 @@
 
 //     // Update booking with payment confirmation
 //     await axios.put(
-//       `https://bookmyservice.onrender.com/api/booking/${bookingId}/payment`,
+//       `http://localhost:5000/api/booking/${bookingId}/payment`,
 //       { paymentIntentId },
 //       {
 //         headers: {
@@ -1139,7 +1139,7 @@ const PaymentForm = ({ amount, onSuccess, onError, formData = {} }) => {
 
       // Create Payment Intent
       const response = await axios.post(
-        "https://bookmyservice.onrender.com/api/stripe/payment-intent",
+        "http://localhost:5000/api/stripe/payment-intent",
         { amount: Math.round(amount * 100) }, // Ensure amount is rounded to avoid decimal issues
         {
           headers: {
@@ -1241,7 +1241,7 @@ const BookingForm = ({ selectedService, onClose }) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await axios.get('https://bookmyservice.onrender.com/api/auth/me', {
+        const response = await axios.get('http://localhost:5000/api/auth/me', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -1300,7 +1300,7 @@ const BookingForm = ({ selectedService, onClose }) => {
 
       // Create the booking record
       const bookingResponse = await axios.post(
-        'https://bookmyservice.onrender.com/api/booking/create',
+        'http://localhost:5000/api/booking/create',
         {
           serviceId: selectedService._id,
           date: formData.date,
@@ -1337,7 +1337,7 @@ const BookingForm = ({ selectedService, onClose }) => {
 
       // Update booking with payment confirmation
       await axios.put(
-        `https://bookmyservice.onrender.com/api/booking/${bookingId}/payment`,
+        `http://localhost:5000/api/booking/${bookingId}/payment`,
         { paymentIntentId },
         {
           headers: {
@@ -1348,7 +1348,7 @@ const BookingForm = ({ selectedService, onClose }) => {
 
       // Book the service
       await axios.put(
-        `https://bookmyservice.onrender.com/api/service/bookService/${selectedService._id}`,
+        `http://localhost:5000/api/service/bookService/${selectedService._id}`,
         {},
         {
           headers: {

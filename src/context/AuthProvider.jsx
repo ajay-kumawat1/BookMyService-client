@@ -58,7 +58,7 @@ export default function AuthProvider ({ children })  {
       if (token) {
         try {
           // Fetch user data using the token
-          const response = await fetch("https://bookmyservice.onrender.com/api/auth/me", {
+          const response = await fetch("http://localhost:5000/api/auth/me", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -79,7 +79,10 @@ export default function AuthProvider ({ children })  {
           }
 
           const data = await response.json();
+          console.log("Auth data from server:", data);
+
           if (data.success && data.data) {
+            console.log("Setting auth user with role:", data.data.role);
             setAuthUser(data.data); // Restore user data
           } else {
             console.log("Invalid response format from server");
@@ -97,6 +100,8 @@ export default function AuthProvider ({ children })  {
   }, []);
 
   const login = (userData, token) => {
+    console.log("Login with user data:", userData);
+    console.log("User role:", userData.role);
     localStorage.setItem("token", token);
     setAuthUser(userData);
   };

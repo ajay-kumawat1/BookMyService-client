@@ -96,7 +96,7 @@
 //       const fetchProfile = async () => {
 //         try {
 //           const response = await fetch(
-//             `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
+//             `http://localhost:5000/api/business-owner/${authUser._id}`,
 //             {
 //               method: "GET",
 //               headers: {
@@ -171,7 +171,7 @@
 //   const handleServiceSubmit = async (e) => {
 //     e.preventDefault();
 //     try {
-//       const response = await fetch("https://bookmyservice.onrender.com/api/service/create", {
+//       const response = await fetch("http://localhost:5000/api/service/create", {
 //         method: "POST",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -212,7 +212,7 @@
 //     e.preventDefault();
 //     try {
 //       const response = await fetch(
-//         `https://bookmyservice.onrender.com/api/service/update/${editingService._id}`,
+//         `http://localhost:5000/api/service/update/${editingService._id}`,
 //         {
 //           method: "PUT",
 //           headers: {
@@ -258,7 +258,7 @@
 //     setError("");
 //     try {
 //       const response = await fetch(
-//         `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
+//         `http://localhost:5000/api/business-owner/${authUser._id}`,
 //         {
 //           method: "PUT",
 //           headers: {
@@ -1285,13 +1285,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 import ServicesTable from "../ServicesTable";
-import { Line } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -1299,6 +1300,16 @@ import {
 import { Menu, X, ArrowLeft, Bell } from "lucide-react"; // Import Lucide icons
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import BookingRequests from "../BookingRequests";
+import axios from "axios";
+
+// Import the Role enum
+const Role = {
+  SYSTEM_ADMIN: "SystemAdmin",
+  ADMIN: "Admin",
+  OWNER: "Owner",
+  USER: "User",
+  SUPER_ADMIN: "SuperAdmin",
+};
 
 // Register Chart.js components
 ChartJS.register(
@@ -1376,13 +1387,26 @@ const BusinessOwnerProfile = () => {
   const [error, setError] = useState("");
   const [editingService, setEditingService] = useState(null);
 
+  // Dashboard state variables for SuperAdmin
+  const [dashboardStats, setDashboardStats] = useState({
+    totalUsers: 0,
+    totalBusinessOwners: 0,
+    totalServices: 0,
+    totalBookings: 0
+  });
+  const [dashboardUsers, setDashboardUsers] = useState([]);
+  const [dashboardServices, setDashboardServices] = useState([]);
+  const [dashboardBusinessOwners, setDashboardBusinessOwners] = useState([]);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [dashboardActiveTab, setDashboardActiveTab] = useState('services');
+
   // Fetch profile data when "Edit Profile" is selected
   useEffect(() => {
     if (activeSection === "edit-profile") {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `https://bookmyservice.onrender.com/api/auth/me`,
+            `http://localhost:5000/api/auth/me`,
             {
               method: "GET",
               headers: {
@@ -1426,7 +1450,7 @@ const BusinessOwnerProfile = () => {
         try {
           setError("");
           const response = await fetch(
-            "https://bookmyservice.onrender.com/api/booking/statistics/revenue",
+            "http://localhost:5000/api/booking/statistics/revenue",
             {
               method: "GET",
               headers: {
@@ -1473,6 +1497,96 @@ const BusinessOwnerProfile = () => {
     }
   }, [activeSection]);
 
+  // Fetch dashboard data when "dashboard" is selected (for SuperAdmin)
+  useEffect(() => {
+    if (activeSection === "dashboard" && (authUser?.role === "SuperAdmin" || authUser?.role === Role.SUPER_ADMIN)) {
+      console.log("Fetching dashboard data for SuperAdmin");
+      const fetchDashboardData = async () => {
+        try {
+          setDashboardLoading(true);
+          setError("");
+
+          // For now, we'll use dummy data since the backend endpoints might not exist yet
+          // In a real implementation, you would make API calls to fetch this data
+
+          // Dummy data for testing
+          setTimeout(() => {
+            setDashboardStats({
+              totalUsers: 25,
+              totalBusinessOwners: 10,
+              totalServices: 45,
+              totalBookings: 120
+            });
+
+            setDashboardUsers([
+              { _id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com', phoneNumber: '1234567890', role: 'User', isVerified: true },
+              { _id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', phoneNumber: '0987654321', role: 'User', isVerified: true },
+              { _id: '3', firstName: 'Bob', lastName: 'Johnson', email: 'bob@example.com', phoneNumber: '5551234567', role: 'User', isVerified: false }
+            ]);
+
+            setDashboardServices([
+              { _id: '1', name: 'Plumbing Service', category: 'Home', price: 50, businessOwner: { businessName: 'Quick Fix Plumbing' } },
+              { _id: '2', name: 'Electrical Repair', category: 'Home', price: 75, businessOwner: { businessName: 'Power Solutions' } },
+              { _id: '3', name: 'House Cleaning', category: 'Cleaning', price: 100, businessOwner: { businessName: 'Clean Home Services' } }
+            ]);
+
+            setDashboardBusinessOwners([
+              { _id: '1', ownerFirstName: 'Mike', ownerLastName: 'Wilson', businessName: 'Quick Fix Plumbing', email: 'mike@example.com', phoneNumber: '1112223333', businessCategory: 'Home' },
+              { _id: '2', ownerFirstName: 'Sarah', ownerLastName: 'Brown', businessName: 'Power Solutions', email: 'sarah@example.com', phoneNumber: '4445556666', businessCategory: 'Home' },
+              { _id: '3', ownerFirstName: 'David', ownerLastName: 'Lee', businessName: 'Clean Home Services', email: 'david@example.com', phoneNumber: '7778889999', businessCategory: 'Cleaning' }
+            ]);
+
+            setDashboardLoading(false);
+          }, 1000);
+
+          // Uncomment this code when the backend endpoints are ready
+          /*
+          const BACKEND_URL = "http://localhost:5000";
+
+          const [statsRes, usersRes, servicesRes, businessesRes] = await Promise.all([
+            axios.get(`${BACKEND_URL}/api/admin/statistics`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }),
+            axios.get(`${BACKEND_URL}/api/admin/users`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }),
+            axios.get(`${BACKEND_URL}/api/admin/services`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }),
+            axios.get(`${BACKEND_URL}/api/admin/businesses`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            })
+          ]);
+
+          setDashboardStats(statsRes.data.data);
+          setDashboardUsers(usersRes.data.data.users);
+          setDashboardServices(servicesRes.data.data.services);
+          setDashboardBusinessOwners(businessesRes.data.data.owners);
+          setDashboardLoading(false);
+          */
+        } catch (error) {
+          console.error('Failed to fetch dashboard data:', error);
+          setError("Failed to fetch dashboard data: " + error.message);
+          setDashboardLoading(false);
+        }
+      };
+
+      fetchDashboardData();
+    }
+  }, [activeSection, authUser?.role]);
+
   // Redirect to login if not authenticated after loading
   useEffect(() => {
     if (!loading && !authUser) {
@@ -1483,6 +1597,91 @@ const BusinessOwnerProfile = () => {
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  // Dashboard handler functions for SuperAdmin
+  const handleDeleteUser = async (userId) => {
+    try {
+      const BACKEND_URL = "http://localhost:5000";
+      const response = await axios.delete(`${BACKEND_URL}/api/admin/user/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Failed to delete user");
+      }
+
+      setDashboardUsers(dashboardUsers.filter((user) => user._id !== userId));
+      setDashboardStats((prevStats) => ({
+        ...prevStats,
+        totalUsers: prevStats.totalUsers - 1,
+      }));
+
+      showSuccessToast("User deleted successfully!");
+    } catch (err) {
+      setError("Failed to delete user: " + err.message);
+      showErrorToast("Failed to delete user: " + err.message);
+      console.error("Delete User Error:", err);
+    }
+  };
+
+  const handleDeleteService = async (serviceId) => {
+    try {
+      const BACKEND_URL = "http://localhost:5000";
+      const response = await axios.delete(`${BACKEND_URL}/api/admin/service/${serviceId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Failed to delete service");
+      }
+
+      setDashboardServices(dashboardServices.filter((service) => service._id !== serviceId));
+      setDashboardStats((prevStats) => ({
+        ...prevStats,
+        totalServices: prevStats.totalServices - 1,
+      }));
+
+      showSuccessToast("Service deleted successfully!");
+    } catch (err) {
+      setError("Failed to delete service: " + err.message);
+      showErrorToast("Failed to delete service: " + err.message);
+      console.error("Delete Service Error:", err);
+    }
+  };
+
+  const handleDeleteBusinessOwner = async (ownerId) => {
+    try {
+      const BACKEND_URL = "http://localhost:5000";
+      const response = await axios.delete(`${BACKEND_URL}/api/admin/business/${ownerId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Failed to delete business owner");
+      }
+
+      setDashboardBusinessOwners(dashboardBusinessOwners.filter((owner) => owner._id !== ownerId));
+      setDashboardStats((prevStats) => ({
+        ...prevStats,
+        totalBusinessOwners: prevStats.totalBusinessOwners - 1,
+      }));
+
+      showSuccessToast("Business owner deleted successfully!");
+    } catch (err) {
+      setError("Failed to delete business owner: " + err.message);
+      showErrorToast("Failed to delete business owner: " + err.message);
+      console.error("Delete Business Owner Error:", err);
+    }
   };
 
   const handleServiceChange = (e) => {
@@ -1512,7 +1711,7 @@ const BusinessOwnerProfile = () => {
   // const handleServiceSubmit = async (e) => {
   //   e.preventDefault();
   //   try {
-  //     const response = await fetch("https://bookmyservice.onrender.com/api/service/create", {
+  //     const response = await fetch("http://localhost:5000/api/service/create", {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",
@@ -1573,7 +1772,7 @@ const BusinessOwnerProfile = () => {
         }
       });
 
-      const response = await fetch("https://bookmyservice.onrender.com/api/service/create", {
+      const response = await fetch("http://localhost:5000/api/service/create", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -1637,7 +1836,7 @@ const BusinessOwnerProfile = () => {
       });
 
       const response = await fetch(
-        `https://bookmyservice.onrender.com/api/service/update/${editingService._id}`,
+        `http://localhost:5000/api/service/update/${editingService._id}`,
         {
           method: "PUT",
           headers: {
@@ -1680,7 +1879,7 @@ const BusinessOwnerProfile = () => {
   //   e.preventDefault();
   //   try {
   //     const response = await fetch(
-  //       `https://bookmyservice.onrender.com/api/service/update/${editingService._id}`,
+  //       `http://localhost:5000/api/service/update/${editingService._id}`,
   //       {
   //         method: "PUT",
   //         headers: {
@@ -1768,7 +1967,7 @@ const BusinessOwnerProfile = () => {
       }
 
       const response = await fetch(
-        `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
+        `http://localhost:5000/api/business-owner/${authUser._id}`,
         {
           method: "PUT",
           headers: {
@@ -1860,39 +2059,227 @@ const BusinessOwnerProfile = () => {
     },
   };
 
-  const menuItems = [
-    {
-      id: "my-profile",
-      label: "My Profile",
-      color: "bg-blue-500 hover:bg-blue-600",
+  // Dashboard graph data and options for SuperAdmin
+  const getDashboardGraphData = () => {
+    if (!dashboardStats) return null;
+
+    return {
+      labels: ['Users', 'Business Owners', 'Services'],
+      datasets: [
+        {
+          label: 'Counts',
+          data: [
+            dashboardStats.totalUsers,
+            dashboardStats.totalBusinessOwners,
+            dashboardStats.totalServices
+          ],
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+          barThickness: 40
+        }
+      ]
+    };
+  };
+
+  const dashboardGraphOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Platform Statistics',
+        font: {
+          size: 16,
+        },
+      },
     },
-    {
-      id: "booking-requests",
-      label: "Booking Requests",
-      color: "bg-red-500 hover:bg-red-600",
-      icon: <Bell size={18} className="mr-2" />,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Count',
+          font: {
+            size: 12,
+          },
+        },
+      },
     },
-    {
-      id: "add-service",
-      label: "Add Service",
-      color: "bg-green-500 hover:bg-green-600",
-    },
-    {
-      id: "my-services",
-      label: "My Services",
-      color: "bg-purple-500 hover:bg-purple-600",
-    },
-    {
-      id: "revenue-statistics",
-      label: "Revenue Statistics",
-      color: "bg-yellow-500 hover:bg-yellow-600",
-    },
-    {
-      id: "edit-profile",
-      label: "Edit Profile",
-      color: "bg-teal-500 hover:bg-teal-600",
-    },
-  ];
+  };
+
+  // Create menu items array based on user role
+  const getMenuItems = () => {
+    const baseMenuItems = [
+      {
+        id: "my-profile",
+        label: "My Profile",
+        color: "bg-blue-500 hover:bg-blue-600",
+      },
+      {
+        id: "booking-requests",
+        label: "Booking Requests",
+        color: "bg-red-500 hover:bg-red-600",
+        icon: <Bell size={18} className="mr-2" />,
+      },
+      {
+        id: "add-service",
+        label: "Add Service",
+        color: "bg-green-500 hover:bg-green-600",
+      },
+      {
+        id: "my-services",
+        label: "My Services",
+        color: "bg-purple-500 hover:bg-purple-600",
+      },
+      {
+        id: "revenue-statistics",
+        label: "Revenue Statistics",
+        color: "bg-yellow-500 hover:bg-yellow-600",
+      },
+      {
+        id: "edit-profile",
+        label: "Edit Profile",
+        color: "bg-teal-500 hover:bg-teal-600",
+      },
+    ];
+
+    // Add Dashboard menu item for SuperAdmin users
+    console.log("Current user:", authUser);
+    console.log("Current user role:", authUser?.role);
+    // Check for SuperAdmin role in multiple ways to ensure it works
+    if (authUser?.role === "SuperAdmin" || authUser?.role === Role.SUPER_ADMIN) {
+      console.log("Adding dashboard menu item for SuperAdmin");
+      baseMenuItems.unshift({
+        id: "dashboard",
+        label: "Dashboard",
+        color: "bg-indigo-500 hover:bg-indigo-600",
+      });
+    }
+
+    return baseMenuItems;
+  };
+
+  const menuItems = getMenuItems();
+
+  // Render dashboard tab content for SuperAdmin
+  const renderDashboardTabContent = () => {
+    switch (dashboardActiveTab) {
+      case 'services':
+        return (
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-200 text-gray-700">
+                <tr>
+                  <th className="px-4 py-2 text-left">Name</th>
+                  <th className="px-4 py-2 text-left">Category</th>
+                  <th className="px-4 py-2 text-left">Price</th>
+                  <th className="px-4 py-2 text-left">Business Owner</th>
+                  <th className="px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboardServices.map((service) => (
+                  <tr key={service._id} className="border-b">
+                    <td className="px-4 py-2">{service.name}</td>
+                    <td className="px-4 py-2">{service.category}</td>
+                    <td className="px-4 py-2">${service.price}</td>
+                    <td className="px-4 py-2">
+                      {service.businessOwner?.businessName || 'Unknown'}
+                    </td>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => handleDeleteService(service._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 'users':
+        return (
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-200 text-gray-700">
+                <tr>
+                  <th className="px-4 py-2 text-left">Name</th>
+                  <th className="px-4 py-2 text-left">Email</th>
+                  <th className="px-4 py-2 text-left">Phone</th>
+                  <th className="px-4 py-2 text-left">Role</th>
+                  <th className="px-4 py-2 text-left">Verified</th>
+                  <th className="px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboardUsers.map((user) => (
+                  <tr key={user._id} className="border-b">
+                    <td className="px-4 py-2">{user.firstName} {user.lastName}</td>
+                    <td className="px-4 py-2">{user.email}</td>
+                    <td className="px-4 py-2">{user.phoneNumber}</td>
+                    <td className="px-4 py-2">{user.role}</td>
+                    <td className="px-4 py-2">{user.isVerified ? 'Yes' : 'No'}</td>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => handleDeleteUser(user._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 'businessOwners':
+        return (
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-200 text-gray-700">
+                <tr>
+                  <th className="px-4 py-2 text-left">Name</th>
+                  <th className="px-4 py-2 text-left">Business Name</th>
+                  <th className="px-4 py-2 text-left">Email</th>
+                  <th className="px-4 py-2 text-left">Phone</th>
+                  <th className="px-4 py-2 text-left">Category</th>
+                  <th className="px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboardBusinessOwners.map((owner) => (
+                  <tr key={owner._id} className="border-b">
+                    <td className="px-4 py-2">{owner.ownerFirstName} {owner.ownerLastName}</td>
+                    <td className="px-4 py-2">{owner.businessName}</td>
+                    <td className="px-4 py-2">{owner.email}</td>
+                    <td className="px-4 py-2">{owner.phoneNumber}</td>
+                    <td className="px-4 py-2">{owner.businessCategory}</td>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => handleDeleteBusinessOwner(owner._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      default:
+        return <div>Select a tab to view data</div>;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
@@ -1985,6 +2372,65 @@ const BusinessOwnerProfile = () => {
             Back
           </button>
         </div>
+
+        {activeSection === "dashboard" && (authUser?.role === "SuperAdmin" || authUser?.role === Role.SUPER_ADMIN) && (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl md:text-2xl font-bold text-indigo-600 mb-6 text-center">
+              Admin Dashboard
+            </h2>
+
+            {dashboardLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <p className="text-gray-500 text-lg">Loading dashboard data...</p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-6" style={{ height: '250px', maxHeight: '300px' }}>
+                  <Bar data={getDashboardGraphData()} options={dashboardGraphOptions} />
+                </div>
+
+                <div className="mb-6">
+                  <div className="flex border-b border-gray-200">
+                    <button
+                      className={`px-4 py-2 font-medium ${
+                        dashboardActiveTab === 'services'
+                          ? 'text-indigo-600 border-b-2 border-indigo-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                      onClick={() => setDashboardActiveTab('services')}
+                    >
+                      Services
+                    </button>
+                    <button
+                      className={`px-4 py-2 font-medium ${
+                        dashboardActiveTab === 'users'
+                          ? 'text-indigo-600 border-b-2 border-indigo-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                      onClick={() => setDashboardActiveTab('users')}
+                    >
+                      Users
+                    </button>
+                    <button
+                      className={`px-4 py-2 font-medium ${
+                        dashboardActiveTab === 'businessOwners'
+                          ? 'text-indigo-600 border-b-2 border-indigo-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                      onClick={() => setDashboardActiveTab('businessOwners')}
+                    >
+                      Business Owners
+                    </button>
+                  </div>
+
+                  <div className="mt-4">
+                    {renderDashboardTabContent()}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {activeSection === "my-profile" && (
           <div className="bg-white rounded-lg shadow-lg p-6">

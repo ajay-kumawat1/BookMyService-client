@@ -31,7 +31,7 @@ const BookedServicesTable = ({ authUser }) => {
 
         // Fetch each service individually
         const servicePromises = uniqueServiceIds.map(async (serviceId) => {
-          const response = await fetch(`https://bookmyservice.onrender.com/api/service/get/${serviceId}`, {
+          const response = await fetch(`http://localhost:5000/api/service/get/${serviceId}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const UserProfile = () => {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `https://bookmyservice.onrender.com/api/auth/me`,
+            `http://localhost:5000/api/auth/me`,
             {
               method: "GET",
               headers: {
@@ -185,7 +185,7 @@ const UserProfile = () => {
     setError("");
     try {
       const response = await fetch(
-        `https://bookmyservice.onrender.com/api/user/update-profile/${authUser._id}`,
+        `http://localhost:5000/api/user/update-profile/${authUser._id}`,
         {
           method: "PUT",
           headers: {

@@ -22,7 +22,7 @@ const BookingRequests = ({ authUser }) => {
 
       setError("");
 
-      const response = await fetch("https://bookmyservice.onrender.com/api/booking/business-owner", {
+      const response = await fetch("http://localhost:5000/api/booking/business-owner", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const BookingRequests = ({ authUser }) => {
   const handleAcceptBooking = async (bookingId) => {
     try {
       setProcessingBookingId(bookingId);
-      const response = await fetch(`https://bookmyservice.onrender.com/api/booking/confirm/${bookingId}`, {
+      const response = await fetch(`http://localhost:5000/api/booking/confirm/${bookingId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -107,7 +107,7 @@ const BookingRequests = ({ authUser }) => {
   const handleRejectBooking = async (bookingId) => {
     try {
       setProcessingBookingId(bookingId);
-      const response = await fetch(`https://bookmyservice.onrender.com/api/booking/cancel-by-provider/${bookingId}`, {
+      const response = await fetch(`http://localhost:5000/api/booking/cancel-by-provider/${bookingId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

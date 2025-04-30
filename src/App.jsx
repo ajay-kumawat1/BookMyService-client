@@ -8,6 +8,7 @@ import Services from "./pages/services/Services";
 import Home from "./pages/Home/Home";
 import Contact from "./pages/contact/Contact";
 import ProtectedRoute from "./components/Protectedroute";
+import BusinessOwnerRoute from "./components/BusinessOwnerRoute";
 import BusinessProfile from "./components/Profiles/Businessprofile";
 import UserProfile from "./components/Profiles/Userprofile";
 import BookingForm from "./components/BookingForm";
@@ -43,15 +44,19 @@ function App() {
         <Route path="/terms-and-conditions" element={<TermsAndConditionsPage/>} />
 
 
-        {/* Protected Routes */}
+        {/* Protected Routes for all authenticated users */}
         <Route element={<ProtectedRoute />}>
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/user-profile" element={<UserProfile/>} />
-          <Route path="/business-profile" element={<BusinessProfile />} />
           <Route path="/book" element={<BookingForm />} />
-          <Route path="/business-registration" element={<Businessregistrationform />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+        </Route>
+
+        {/* Protected Routes for Business Owners and SuperAdmins only */}
+        <Route element={<BusinessOwnerRoute />}>
+          <Route path="/business-profile" element={<BusinessProfile />} />
+          <Route path="/business-registration" element={<Businessregistrationform />} />
         </Route>
       </Routes>
     </Router>

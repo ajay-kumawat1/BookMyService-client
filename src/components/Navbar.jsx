@@ -7,7 +7,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const [authUser, , logout, , loading] = useAuth(); // Get authenticated user, logout function, and loading state from context
+  const [authUser, , logout] = useAuth(); // Get authenticated user and logout function from context
 
   const handleGetInTouch = () => {
     navigate("/contact");
@@ -16,7 +16,12 @@ const Navbar = () => {
   const handleProfileClick = () => {
     // Redirect to the appropriate profile page based on the user's role
     if (authUser) {
-      navigate(authUser.role === "Owner" ? "/business-profile" : "/user-profile");
+      console.log("Profile click - User role:", authUser.role);
+      if (authUser.role === "Owner" || authUser.role === "SuperAdmin") {
+        navigate("/business-profile");
+      } else {
+        navigate("/user-profile");
+      }
     }
   };
 

@@ -14,7 +14,7 @@
 // // Initialize ChartJS components
 // ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// const BACKEND_URL = "https://bookmyservice.onrender.com";
+// const BACKEND_URL = "http://localhost:5000";
 
 // const AdminDashboard = () => {
 //   const [stats, setStats] = useState(null);
@@ -365,7 +365,7 @@ import {
 // Initialize ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const BACKEND_URL = "https://bookmyservice.onrender.com";
+const BACKEND_URL = "http://localhost:5000";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);

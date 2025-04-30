@@ -10,7 +10,7 @@ const ServicesTable = ({ authUser, onEdit }) => {
   const handleDeleteService = async (serviceId) => {
     try {
       setLoading(true);
-      const response = await fetch(`https://bookmyservice.onrender.com/api/service/delete/${serviceId}`, {
+      const response = await fetch(`http://localhost:5000/api/service/delete/${serviceId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +37,7 @@ const ServicesTable = ({ authUser, onEdit }) => {
   }
   const fetchServices = async () => {
     try {
-      const response = await fetch("https://bookmyservice.onrender.com/api/service/getMy", {
+      const response = await fetch("http://localhost:5000/api/service/getMy", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
