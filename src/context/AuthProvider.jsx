@@ -51,12 +51,13 @@ export default function AuthProvider ({ children })  {
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true); // Add loading state
 
-  // Restore authUser from token on mount
+  // Restore authUser from token on mount or when profile is updated
   useEffect(() => {
     const restoreAuth = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
+          console.log("Fetching user data from server...");
           // Fetch user data using the token
           const response = await fetch("http://localhost:5000/api/auth/me", {
             method: "GET",
@@ -83,6 +84,7 @@ export default function AuthProvider ({ children })  {
 
           if (data.success && data.data) {
             console.log("Setting auth user with role:", data.data.role);
+            console.log("Business logo URL:", data.data.businessLogo);
             setAuthUser(data.data); // Restore user data
           } else {
             console.log("Invalid response format from server");
@@ -97,6 +99,21 @@ export default function AuthProvider ({ children })  {
       setLoading(false); // Done checking
     };
     restoreAuth();
+
+    // Listen for profile updates
+    const handleStorageChange = (e) => {
+      // If this is a custom event (no key) or the updatedProfile key changed
+      if (!e.key || e.key === 'updatedProfile') {
+        console.log("Profile updated, refreshing user data");
+        restoreAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const login = (userData, token) => {

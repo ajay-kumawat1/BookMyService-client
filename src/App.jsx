@@ -16,6 +16,7 @@ import AdminDashboard from "./components/dashboard";
 import Portfolio from "./pages/Portfolio/Portfolio";
 import PrivacyPolicyPage from "./components/PrivacyPolicyPage";
 import TermsAndConditionsPage from "./components/TermsAndConditionsPage";
+import SocialAuthSuccess from "./pages/SocialAuthSuccess";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -42,6 +43,7 @@ function App() {
         <Route path="/portfolio" element={<Portfolio/>} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage/>} />
         <Route path="/terms-and-conditions" element={<TermsAndConditionsPage/>} />
+        <Route path="/social-auth-success" element={<SocialAuthSuccess />} />
 
 
         {/* Protected Routes for all authenticated users */}

@@ -1963,8 +1963,17 @@ const BusinessOwnerProfile = () => {
 
       // Add logo file if it exists
       if (logoFile) {
-        formData.append('file', logoFile);
+        console.log("Adding logo file to form data:", logoFile.name, logoFile.type, logoFile.size);
+        formData.append('businessLogo', logoFile);
       }
+
+      // Log the FormData contents (for debugging)
+      console.log("Form data entries:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]));
+      }
+
+      console.log("Sending profile update request to:", `http://localhost:5000/api/business-owner/${authUser._id}`);
 
       const response = await fetch(
         `http://localhost:5000/api/business-owner/${authUser._id}`,
@@ -1977,11 +1986,36 @@ const BusinessOwnerProfile = () => {
           body: formData,
         }
       );
-      const data = await response.json();
+
+      console.log("Profile update response status:", response.status);
+
+      // Try to parse the response as JSON
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+        console.log("Profile update response data:", data);
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("Server returned non-JSON response");
+      }
+
       if (!response.ok)
         throw new Error(data.message || "Failed to update profile");
 
+      console.log("Updated business owner data:", data.data);
+      console.log("Business logo URL:", data.data.businessLogo);
+
+      // Update the auth user state with the new data
       setAuthUser(data.data);
+
+      // Force a refresh of the auth context by updating localStorage
+      localStorage.setItem("updatedProfile", Date.now().toString());
+
+      // Trigger a manual refresh of the profile data
+      window.dispatchEvent(new Event('storage'));
+
       showSuccessToast("Profile updated successfully!");
       setActiveSection("my-profile");
     } catch (err) {

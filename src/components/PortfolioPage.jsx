@@ -75,11 +75,24 @@ const PortfolioPage = () => {
                 className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition text-center"
               >
                 <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-300 overflow-hidden">
-                  <img
-                    src="/placeholder-avatar.jpg"
-                    alt={`${owner.ownerFirstName} ${owner.ownerLastName}`}
-                    className="w-full h-full object-cover"
-                  />
+                  {owner.businessLogo ? (
+                    <img
+                      src={owner.businessLogo}
+                      alt={`${owner.businessName} Logo`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder-avatar.jpg";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-orange-100">
+                      <span className="text-xl font-bold text-orange-500">
+                        {owner.ownerFirstName?.charAt(0) || ""}
+                        {owner.ownerLastName?.charAt(0) || ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <h3 className="text-xl font-semibold">{owner.ownerFirstName} {owner.ownerLastName}</h3>
                 <p className="text-gray-600">{owner.businessName}</p>

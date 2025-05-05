@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { showSuccessToast, showErrorToast } from "../utils/toast";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 
 const Authpage = () => {
   const navigate = useNavigate();
@@ -369,16 +370,51 @@ const Authpage = () => {
           </button>
 
           {!verificationSent && (
-            <p
-              className="mt-4 text-center text-blue-500 cursor-pointer"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setVerificationSent(false);
-                setError("");
-              }}
-            >
-              {isLogin ? "Need an account? Register" : "Have an account? Login"}
-            </p>
+            <>
+              <div className="mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => {
+                      window.open("http://localhost:5000/api/auth/google", "_self");
+                    }}
+                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <FaGoogle className="h-5 w-5 text-red-500" />
+                    <span className="ml-2">Google</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      window.open("http://localhost:5000/api/auth/facebook", "_self");
+                    }}
+                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <FaFacebook className="h-5 w-5 text-blue-600" />
+                    <span className="ml-2">Facebook</span>
+                  </button>
+                </div>
+              </div>
+
+              <p
+                className="mt-4 text-center text-blue-500 cursor-pointer"
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setVerificationSent(false);
+                  setError("");
+                }}
+              >
+                {isLogin ? "Need an account? Register" : "Have an account? Login"}
+              </p>
+            </>
           )}
         </form>
       </div>
