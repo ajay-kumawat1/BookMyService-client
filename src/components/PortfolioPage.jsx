@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'; // For animations
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthProvider';
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://bookmyservice.onrender.com";
 
 const PortfolioPage = () => {
   const [businessOwners, setBusinessOwners] = useState([]);

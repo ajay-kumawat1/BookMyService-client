@@ -26,8 +26,8 @@ const Authpage = () => {
   const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState("");
   const [, setAuthUser] = useAuth();
-  // const BACKEND_URL = "http://localhost:5000";
-  const BACKEND_URL = "http://localhost:5000";
+  // const BACKEND_URL = "https://bookmyservice.onrender.com";
+  const BACKEND_URL = "https://bookmyservice.onrender.com";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -384,7 +384,7 @@ const Authpage = () => {
                 <div className="mt-6 grid grid-cols-2 gap-3">
                   <button
                     onClick={() => {
-                      window.open("http://localhost:5000/api/auth/google", "_self");
+                      window.open("https://bookmyservice.onrender.com/api/auth/google", "_self");
                     }}
                     className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
@@ -394,7 +394,7 @@ const Authpage = () => {
 
                   <button
                     onClick={() => {
-                      window.open("http://localhost:5000/api/auth/facebook", "_self");
+                      window.open("https://bookmyservice.onrender.com/api/auth/facebook", "_self");
                     }}
                     className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >

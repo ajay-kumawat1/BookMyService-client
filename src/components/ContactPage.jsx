@@ -38,7 +38,7 @@ const ContactPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/contact/submit', {
+      const response = await fetch('https://bookmyservice.onrender.com/api/contact/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -142,9 +142,9 @@ const ContactPage = () => {
         {/* Contact Information */}
         <div className="w-full lg:w-1/3 bg-white p-8 rounded-2xl shadow-lg">
           <h2 className="text-2xl font-semibold mb-6">Contact Details</h2>
-          <p className="mb-4"><strong>📍 Address:</strong> 123 Business Street, Your City</p>
-          <p className="mb-4"><strong>📞 Phone:</strong> +1 234 567 890</p>
-          <p className="mb-4"><strong>✉️ Email:</strong> info@yourbusiness.com</p>
+          <p className="mb-4"><strong>📍 Address:</strong> 56 , Navagam Dindoli Road Surat</p>
+          <p className="mb-4"><strong>📞 Phone:</strong> +91 8329143496</p>
+          <p className="mb-4"><strong>✉️ Email:</strong> bookmyservice786@gmail.com</p>
           <p className="mb-4"><strong>⏰ Working Hours:</strong> Mon - Fri, 9AM - 6PM</p>
 
           {/* Social Media Links */}

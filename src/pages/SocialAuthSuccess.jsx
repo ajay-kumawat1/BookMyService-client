@@ -22,7 +22,7 @@ const SocialAuthSuccess = () => {
         }
 
         // Fetch user data using the token
-        const response = await fetch('http://localhost:5000/api/auth/me', {
+        const response = await fetch('https://bookmyservice.onrender.com/api/auth/me', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -19,7 +19,7 @@ const Homepage = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/service/getAll");
+        const response = await axios.get("https://bookmyservice.onrender.com/api/service/getAll");
         setServices(response.data.data); // Assuming the services are in `data.data`
       } catch (error) {
         setError(error.message);

@@ -19,7 +19,7 @@ import BookingForm from "./BookingForm";
 //         setLoading(true);
 //         setError(null);
 
-//         const response = await fetch("http://localhost:5000/api/service/getAll", {
+//         const response = await fetch("https://bookmyservice.onrender.com/api/service/getAll", {
 //           headers: {
 //             Authorization: `Bearer ${localStorage.getItem("token")}`,
 //           },
@@ -253,7 +253,7 @@ const ServiceListingPage = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("http://localhost:5000/api/service/getAll", {
+        const response = await fetch("https://bookmyservice.onrender.com/api/service/getAll", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -309,7 +309,7 @@ const ServiceListingPage = () => {
     // Check if user has already booked this service
     const checkIfAlreadyBooked = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/booking/user`, {
+        const response = await fetch(`https://bookmyservice.onrender.com/api/booking/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

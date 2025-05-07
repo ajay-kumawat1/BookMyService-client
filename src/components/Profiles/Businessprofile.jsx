@@ -96,7 +96,7 @@
 //       const fetchProfile = async () => {
 //         try {
 //           const response = await fetch(
-//             `http://localhost:5000/api/business-owner/${authUser._id}`,
+//             `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
 //             {
 //               method: "GET",
 //               headers: {
@@ -171,7 +171,7 @@
 //   const handleServiceSubmit = async (e) => {
 //     e.preventDefault();
 //     try {
-//       const response = await fetch("http://localhost:5000/api/service/create", {
+//       const response = await fetch("https://bookmyservice.onrender.com/api/service/create", {
 //         method: "POST",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -212,7 +212,7 @@
 //     e.preventDefault();
 //     try {
 //       const response = await fetch(
-//         `http://localhost:5000/api/service/update/${editingService._id}`,
+//         `https://bookmyservice.onrender.com/api/service/update/${editingService._id}`,
 //         {
 //           method: "PUT",
 //           headers: {
@@ -258,7 +258,7 @@
 //     setError("");
 //     try {
 //       const response = await fetch(
-//         `http://localhost:5000/api/business-owner/${authUser._id}`,
+//         `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
 //         {
 //           method: "PUT",
 //           headers: {
@@ -1406,7 +1406,7 @@ const BusinessOwnerProfile = () => {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/auth/me`,
+            `https://bookmyservice.onrender.com/api/auth/me`,
             {
               method: "GET",
               headers: {
@@ -1450,7 +1450,7 @@ const BusinessOwnerProfile = () => {
         try {
           setError("");
           const response = await fetch(
-            "http://localhost:5000/api/booking/statistics/revenue",
+            "https://bookmyservice.onrender.com/api/booking/statistics/revenue",
             {
               method: "GET",
               headers: {
@@ -1541,7 +1541,7 @@ const BusinessOwnerProfile = () => {
 
           // Uncomment this code when the backend endpoints are ready
           /*
-          const BACKEND_URL = "http://localhost:5000";
+          const BACKEND_URL = "https://bookmyservice.onrender.com";
 
           const [statsRes, usersRes, servicesRes, businessesRes] = await Promise.all([
             axios.get(`${BACKEND_URL}/api/admin/statistics`, {
@@ -1602,7 +1602,7 @@ const BusinessOwnerProfile = () => {
   // Dashboard handler functions for SuperAdmin
   const handleDeleteUser = async (userId) => {
     try {
-      const BACKEND_URL = "http://localhost:5000";
+      const BACKEND_URL = "https://bookmyservice.onrender.com";
       const response = await axios.delete(`${BACKEND_URL}/api/admin/user/${userId}`, {
         headers: {
           "Content-Type": "application/json",
@@ -1630,7 +1630,7 @@ const BusinessOwnerProfile = () => {
 
   const handleDeleteService = async (serviceId) => {
     try {
-      const BACKEND_URL = "http://localhost:5000";
+      const BACKEND_URL = "https://bookmyservice.onrender.com";
       const response = await axios.delete(`${BACKEND_URL}/api/admin/service/${serviceId}`, {
         headers: {
           "Content-Type": "application/json",
@@ -1658,7 +1658,7 @@ const BusinessOwnerProfile = () => {
 
   const handleDeleteBusinessOwner = async (ownerId) => {
     try {
-      const BACKEND_URL = "http://localhost:5000";
+      const BACKEND_URL = "https://bookmyservice.onrender.com";
       const response = await axios.delete(`${BACKEND_URL}/api/admin/business/${ownerId}`, {
         headers: {
           "Content-Type": "application/json",
@@ -1711,7 +1711,7 @@ const BusinessOwnerProfile = () => {
   // const handleServiceSubmit = async (e) => {
   //   e.preventDefault();
   //   try {
-  //     const response = await fetch("http://localhost:5000/api/service/create", {
+  //     const response = await fetch("https://bookmyservice.onrender.com/api/service/create", {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",
@@ -1772,7 +1772,7 @@ const BusinessOwnerProfile = () => {
         }
       });
 
-      const response = await fetch("http://localhost:5000/api/service/create", {
+      const response = await fetch("https://bookmyservice.onrender.com/api/service/create", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -1836,7 +1836,7 @@ const BusinessOwnerProfile = () => {
       });
 
       const response = await fetch(
-        `http://localhost:5000/api/service/update/${editingService._id}`,
+        `https://bookmyservice.onrender.com/api/service/update/${editingService._id}`,
         {
           method: "PUT",
           headers: {
@@ -1879,7 +1879,7 @@ const BusinessOwnerProfile = () => {
   //   e.preventDefault();
   //   try {
   //     const response = await fetch(
-  //       `http://localhost:5000/api/service/update/${editingService._id}`,
+  //       `https://bookmyservice.onrender.com/api/service/update/${editingService._id}`,
   //       {
   //         method: "PUT",
   //         headers: {
@@ -1973,10 +1973,10 @@ const BusinessOwnerProfile = () => {
         console.log(pair[0] + ': ' + (pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]));
       }
 
-      console.log("Sending profile update request to:", `http://localhost:5000/api/business-owner/${authUser._id}`);
+      console.log("Sending profile update request to:", `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`);
 
       const response = await fetch(
-        `http://localhost:5000/api/business-owner/${authUser._id}`,
+        `https://bookmyservice.onrender.com/api/business-owner/${authUser._id}`,
         {
           method: "PUT",
           headers: {
